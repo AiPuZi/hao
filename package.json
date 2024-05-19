@@ -1,7 +1,8 @@
 {
   "dependencies": {
     "hanzi-writer": "^3.6.1",
-    "pinyin": "^4.0.0-alpha.0"
+    "pinyin": "^4.0.0-alpha.0",
+    "segmentit": "^2.0.3"
   },
   "devDependencies": {
     "webpack": "^5.91.0",
