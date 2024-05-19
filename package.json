@@ -9,6 +9,6 @@
     "webpack-cli": "^5.1.4"
   },
   "scripts": {
-    "build": "npx webpack --config ./webpack.config.js --mode production"
+    "build": "npx webpack --mode production"
   }
 }
