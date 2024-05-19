@@ -1,3 +1,6 @@
+import HanziWriter from 'hanzi-writer';
+import pinyin from 'pinyin';
+
 // 定义要显示的汉字列表（示例）
 var characters = ['我', '你', '他', '她', '它', '们', '是', '在', '的', '一', '二', '三', '四', '五', '六'];
 var currentPageIndex = 0; // 当前页码，初始化为 0
