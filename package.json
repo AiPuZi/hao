@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "build": "webpack --mode production"
+  },
   "dependencies": {
     "hanzi-writer": "^3.6.1",
     "pinyin": "^4.0.0-alpha.0",
