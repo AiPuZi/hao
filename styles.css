@@ -1,0 +1,122 @@
+/* Reset styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Global styles */
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+.header {
+    background-color: #444;
+    padding: 10px 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 25px;
+    font-weight: bold;
+    color: #fff;
+    text-decoration: none;
+}
+
+.navigation {
+    position: absolute;
+    left: 0;
+    right: 0;
+    text-align: center;
+}
+
+.navigation a {
+    color: #fff;
+    text-decoration: none;
+    margin: 0 15px;
+    font-size: 18px;
+}
+
+main {
+    width: 1100px; /* Width of the main container */
+    margin: 60px auto 20px; /* Adjusted top margin to avoid overlapping with the header */
+    padding: 13px;
+    background-color: #fff; /* Set main background to white */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Three columns */
+    grid-gap: 13px; /* White space between boxes */
+    border: 2px solid #fff; /* Adjusting border style to white as per new style */
+    box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Optional shadow for depth */
+}
+
+.character-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0; /* Light gray background for each character box */
+    padding: 10px; /* Padding inside each character box */
+}
+
+.character-box .pinyin {
+    margin-bottom: 5px; /* Space between pinyin and character */
+}
+
+.character-box .hanzi {
+    margin-bottom: 1px; /* Space between character and buttons */
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 1px; /* Space above buttons */
+}
+
+.button-container button {
+    margin: 0 5px; /* Space between buttons */
+    background-color: #e0e0e0; /* Same as character box for consistency */
+    border: none;
+    border-radius: 50%; /* Rounded buttons */
+    width: 36px;
+    height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.button-container .play-button i, .button-container .sound-button i {
+    font-size: 18px;
+    color: #666; /* Icon color */
+}
+
+#prev-page {
+    margin-right: 30px; /* 增加右侧间距 */
+}
+
+#next-page {
+    margin-left: 30px; /* 增加左侧间距 */
+}
+
+.footer {
+    text-align: center;
+    padding: 10px; /* 增加了内边距以确保与上方内容有间距 */
+    color: #505050; /* 设置字体颜色为中等灰色 */
+    font-weight: bold;
+    font-size: 0.8em;
+    font-family: 'Microsoft YaHei', Arial, sans-serif; /* 设置字体为微软雅黑，如果不可用则回退到Arial */
+    margin-top: 10px; /* 与上方内容的间距 */
+  }
+  
+  .footer a {
+    color: #505050; /* 链接文字颜色也设置为中等灰色 */
+    text-decoration: none; /* 移除下划线 */
+  }
