@@ -6,5 +6,5 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'), // 输出目录
     filename: 'bundle.js' // 输出文件
   },
-  mode: 'development' // 设置模式为开发模式
+  mode: 'production' // 设置模式为生产模式
 };
