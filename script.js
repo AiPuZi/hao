@@ -1,17 +1,23 @@
 import HanziWriter from 'hanzi-writer';
 import pinyin from 'pinyin';
 
-// 定义要显示的汉字列表（示例）
-var characters = ['我', '你', '他', '她', '它', '们', '是', '在', '的', '一', '二', '三', '四', '五', '六'];
 var currentPageIndex = 0; // 当前页码，初始化为 0
+var characters = []; // 将从 JSON 文件中动态加载
 
 // 页面加载完成后执行
 document.addEventListener('DOMContentLoaded', function() {
-  renderCharacters(currentPageIndex); // 初始加载第一页汉字
+  // 使用 Fetch API 异步加载 chinese.json 文件
+  fetch('chinese.json')
+    .then(response => response.json())
+    .then(data => {
+      characters = data; // 将加载的数据赋值给 characters 变量
+      renderCharacters(currentPageIndex); // 初始加载第一页汉字
+    })
+    .catch(error => console.error('Error fetching JSON:', error));
 });
 
-// 渲染汉字
 function renderCharacters(pageIndex) {
+    // 确保您的 HTML 中有一个 id 为 'text-container' 的元素
     var textContainer = document.getElementById('text-container');
     textContainer.innerHTML = ''; // 清空内容
   
