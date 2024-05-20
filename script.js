@@ -2,6 +2,8 @@ import HanziWriter from 'hanzi-writer';
 import pinyin from 'pinyin';
 
 var currentPageIndex = 0; // 当前页码，初始化为 0
+var pageSize = 9; // 每页显示的汉字数
+var pageGroupSize = 10; // 每组显示的页码数
 var characters = []; // 将从 JSON 文件中动态加载
 
 // 页面加载完成后执行
@@ -11,19 +13,20 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(response => response.json())
     .then(data => {
       characters = data; // 将加载的数据赋值给 characters 变量
+      renderPagination(); // 渲染分页按钮
       renderCharacters(currentPageIndex); // 初始加载第一页汉字
     })
     .catch(error => console.error('Error fetching JSON:', error));
 });
 
+// 渲染汉字
 function renderCharacters(pageIndex) {
-    // 确保您的 HTML 中有一个 id 为 'text-container' 的元素
-    var textContainer = document.getElementById('text-container');
-    textContainer.innerHTML = ''; // 清空内容
-  
-    var start = pageIndex * 9; // 每页显示9个汉字
-    var end = start + 9;
-    var pageCharacters = characters.slice(start, end);
+  var textContainer = document.getElementById('text-container');
+  textContainer.innerHTML = ''; // 清空内容
+
+  var start = pageIndex * pageSize; // 计算当前页面的起始汉字索引
+  var end = start + pageSize; // 计算当前页面的结束汉字索引
+  var pageCharacters = characters.slice(start, end); // 获取当前页面的汉字
   
     pageCharacters.forEach(function(char, index) {
         var characterBox = document.createElement('div');
@@ -105,18 +108,69 @@ function renderCharacters(pageIndex) {
     });
 }
 
-// 下一页按钮点击事件
-document.getElementById('next-page').addEventListener('click', function() {
-  if ((currentPageIndex + 1) * 9 < characters.length) {
-    currentPageIndex++;
-    renderCharacters(currentPageIndex);
+// 渲染分页按钮
+function renderPagination() {
+  var paginationContainer = document.getElementById('pagination-container');
+  paginationContainer.innerHTML = ''; // 清空分页按钮
+
+  var totalPages = Math.ceil(characters.length / pageSize); // 计算总页数
+  var groupIndex = Math.floor(currentPageIndex / pageGroupSize); // 当前页码组索引
+  var startPage = groupIndex * pageGroupSize; // 当前页码组的起始页码
+  var endPage = Math.min(startPage + pageGroupSize, totalPages); // 当前页码组的结束页码
+
+  // 添加页码按钮
+  for (var i = startPage; i < endPage; i++) {
+    var pageBtn = document.createElement('button');
+    pageBtn.innerText = i + 1;
+    pageBtn.onclick = (function(i) {
+      return function() {
+        currentPageIndex = i;
+        renderCharacters(i);
+        highlightCurrentPageButton(i);
+      };
+    })(i);
+    paginationContainer.appendChild(pageBtn);
   }
-});
+
+  highlightCurrentPageButton(currentPageIndex); // 高亮当前页码按钮
+}
+
+// 高亮当前页面按钮
+function highlightCurrentPageButton(pageIndex) {
+  var buttons = document.getElementById('pagination-container').getElementsByTagName('button');
+  for (var button of buttons) {
+    button.classList.remove('active');
+  }
+  buttons[pageIndex % pageGroupSize].classList.add('active');
+}
 
 // 上一页按钮点击事件
 document.getElementById('prev-page').addEventListener('click', function() {
   if (currentPageIndex > 0) {
-    currentPageIndex--;
-    renderCharacters(currentPageIndex);
+    var newPageIndex = currentPageIndex - 1;
+    currentPageIndex = newPageIndex;
+    renderCharacters(newPageIndex);
+
+    // 如果跳到了前一组的最后一页，重新渲染分页按钮
+    if (newPageIndex % pageGroupSize === pageGroupSize - 1) {
+      renderPagination();
+    }
+    highlightCurrentPageButton(newPageIndex);
+  }
+});
+
+// 下一页按钮点击事件
+document.getElementById('next-page').addEventListener('click', function() {
+  var totalPages = Math.ceil(characters.length / pageSize);
+  if (currentPageIndex < totalPages - 1) {
+    var newPageIndex = currentPageIndex + 1;
+    currentPageIndex = newPageIndex;
+    renderCharacters(newPageIndex);
+
+    // 如果跳到了下一组的第一页，重新渲染分页按钮
+    if (newPageIndex % pageGroupSize === 0) {
+      renderPagination();
+    }
+    highlightCurrentPageButton(newPageIndex);
   }
 });
