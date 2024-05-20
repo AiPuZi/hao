@@ -120,7 +120,7 @@ main {
     color: #505050; /* 链接文字颜色也设置为中等灰色 */
     text-decoration: none; /* 移除下划线 */
 
-/* 分页控件的外层容器样式 */
+/* 分页控件的样式 */
 .pagination-wrapper {
     display: flex;
     justify-content: center; /* 水平居中显示所有分页按钮 */
