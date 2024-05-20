@@ -46,6 +46,7 @@ function renderCharacters(pageIndex) {
     <line x1="100" y1="0" x2="0" y2="100" stroke="#DDD" />
     <line x1="50" y1="0" x2="50" y2="100" stroke="#DDD" />
     <line x1="0" y1="50" x2="100" y2="50" stroke="#DDD" />
+    `;
       
         var pinyinDiv = document.createElement('div');
         pinyinDiv.classList.add('pinyin');
