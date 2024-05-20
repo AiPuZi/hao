@@ -119,4 +119,41 @@ main {
   .footer a {
     color: #505050; /* 链接文字颜色也设置为中等灰色 */
     text-decoration: none; /* 移除下划线 */
+
+      // 调整分页按钮样式
+  .button-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  #pagination-container {
+    display: flex;
+    align-items: center;
+    margin: 0 10px;
+  }
+  
+  .page-button, #pagination-container button {
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background-color: #f8f8f8;
+    margin: 0 5px;
+    border-radius: 50%; /* 使按钮变成圆形 */
+    font-size: 14px;
+    width: 36px; /* 设置按钮宽度 */
+    height: 36px; /* 设置按钮高度，与宽度相同确保是圆形 */
+    display: flex; /* 使用flex布局使文字居中 */
+    align-items: center; /* 垂直居中 */
+    justify-content: center; /* 水平居中 */
+  }
+  
+  .page-button:hover, #pagination-container button:hover {
+    background-color: #e7e7e7;
+  }
+  
+  #pagination-container .active, .page-button:disabled {
+    background-color: #ccc; /* 当前页和禁用按钮的颜色 */
+    color: white;
+    cursor: not-allowed; /* 更改鼠标样式表示按钮不可点击 */
+  }
   }
