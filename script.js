@@ -2,7 +2,7 @@ import HanziWriter from 'hanzi-writer';
 import pinyin from 'pinyin';
 
 var currentPageIndex = 0; // 当前页码，初始化为 0
-var pageSize = 9; // 每页显示的汉字数
+var pageSize = 30; // 每页显示的汉字数
 var pageGroupSize = 10; // 每组显示的页码数
 var characters = []; // 将从 JSON 文件中动态加载
 
