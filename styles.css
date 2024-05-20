@@ -52,7 +52,7 @@ main {
     background-color: #fff; /* Set main background to white */
     display: grid;
     grid-template-columns: repeat(3, 1fr); /* Three columns */
-    grid-gap: 13px; /* White space between boxes */
+    grid-gap: 15px; /* White space between boxes */
     border: 2px solid #fff; /* Adjusting border style to white as per new style */
     box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Optional shadow for depth */
 }
@@ -62,7 +62,7 @@ main {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: #f0f0f0; /* Light gray background for each character box */
+    background-color: #F6F6F6; /* Light gray background for each character box */
     padding: 10px; /* Padding inside each character box */
 }
 
@@ -120,61 +120,45 @@ main {
     color: #505050; /* 链接文字颜色也设置为中等灰色 */
     text-decoration: none; /* 移除下划线 */
 
-      // 调整分页按钮样式
+/* 分页控件的外层容器样式 */
 .pagination-wrapper {
-    display: flex;
-    justify-content: center; /* 水平居中显示所有分页按钮 */
-    align-items: center; /* 垂直居中对齐 */
-    gap: 10px; /* 设置按钮之间的间距 */
-  }
-  
-  /* 分页按钮容器的样式 */
-  #pagination-container {
-    display: flex;
-    justify-content: center; /* 水平居中分页按钮 */
-    flex-wrap: wrap; /* 如果需要，允许按钮换行 */
-    gap: 5px; /* 分页按钮之间的间距 */
-  }
-  
-  /* 分页按钮的样式 */
-  #pagination-container button {
-    cursor: pointer;
-    border: 1px solid #ccc;
-    background-color: #f8f8f8;
-    border-radius: 4px; /* 轻微圆角的按钮 */
-    font-size: 14px;
-    padding: 5px 10px; /* 按钮内部的padding，确保内容有空间 */
-    margin: 0; /* 重置margin，因为我们使用gap来设置间距 */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  /* 分页按钮悬停效果 */
-  #pagination-container button:hover {
-    background-color: #e7e7e7;
-  }
-  
-  /* 当前活动的分页按钮样式 */
-  #pagination-container .active {
-    background-color: #ccc;
-    color: white;
-    cursor: not-allowed;
-  }
-  
-  /* 前一页和下一页按钮的样式 */
-  .page-button {
-    cursor: pointer;
-    border: 1px solid #ccc;
-    background-color: #f8f8f8;
-    border-radius: 4px; /* 轻微圆角的按钮 */
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 5px 10px;
-  }
-  
-  .page-button:hover {
-    background-color: #e7e7e7;
-  }
+  display: flex;
+  justify-content: center; /* 水平居中显示所有分页按钮 */
+  align-items: center; /* 垂直居中对齐 */
+  gap: 10px; /* 设置按钮之间的间距 */
+}
+
+/* 分页按钮容器的样式 */
+#pagination-container {
+  display: flex;
+  justify-content: center; /* 水平居中分页按钮 */
+  align-items: center; /* 使页码按钮垂直居中 */
+  gap: 5px; /* 分页按钮之间的间距 */
+}
+
+/* 分页按钮的样式 */
+#pagination-container button, .page-button {
+  cursor: pointer;
+  border: 1px solid #ccc;
+  background-color: #f8f8f8;
+  border-radius: 50%; /* 圆形按钮 */
+  font-size: 14px;
+  width: 36px; /* 设置按钮宽度 */
+  height: 36px; /* 设置按钮高度，与宽度相同确保是圆形 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0; /* 重置margin，因为我们使用gap来设置间距 */
+}
+
+/* 分页按钮悬停效果 */
+#pagination-container button:hover, .page-button:hover {
+  background-color: #e7e7e7;
+}
+
+/* 当前活动的分页按钮样式 */
+#pagination-container .active {
+  background-color: #ccc;
+  color: white;
+  cursor: not-allowed;
+}
