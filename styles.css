@@ -128,10 +128,12 @@ main {
     }
     
     #pagination-container {
-      display: flex;
-      align-items: center;
-      margin: 0 10px;
-    }
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: row; /* 确保按钮水平排列 */
+        margin: 0 10px;
+      }
     
     .page-button, #pagination-container button {
       cursor: pointer;
