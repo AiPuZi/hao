@@ -1,6 +1,4 @@
-// 确保文档加载完毕后再绑定事件监听器
 document.addEventListener('DOMContentLoaded', function() {
-    // 绑定点击事件到导航栏，使用事件委托
     document.querySelector('.navigation').addEventListener('click', function(event) {
         event.preventDefault(); // 阻止默认的链接跳转
 
@@ -8,15 +6,21 @@ document.addEventListener('DOMContentLoaded', function() {
         if (target.tagName === 'A') { // 确认点击的是链接
             var category = target.getAttribute('href').substring(1); // 获取分类标识符，移除'#'
 
-            // 示例代码中没有提供`renderCharacters`函数，这里假设它是用于渲染汉字内容的函数
-            // 如果你有不同的分类处理逻辑，可以在这里调整
-            loadCategoryData(category);
+            // 检查点击的是否是“汉字”分类
+            if (category === 'chinese') {
+                // 重新渲染汉字内容
+                currentPageIndex = 0; // 可以设定为首页或保持当前的页码
+                renderCharacters(currentPageIndex);
+            } else {
+                // 加载其他分类的数据
+                loadCategoryData(category);
+            }
         }
     });
 });
 
 function loadCategoryData(category) {
-    // 根据分类标识符构造文件路径
+    // 根据分类标识符构造文件路径，这里不会处理'chinese'分类
     var dataFilePath = category + '.json';
 
     // 使用 Fetch API 异步加载对应分类的JSON数据文件
@@ -39,10 +43,10 @@ function renderCategoryContent(data, category) {
     // 假设每项数据都是一个对象，包含title和description
     data.forEach(item => {
         var title = document.createElement('h2');
-        title.textContent = item.title; // 假设你的数据中有title字段
+        title.textContent = item.title;
 
         var description = document.createElement('p');
-        description.textContent = item.description; // 假设你的数据中有description字段
+        description.textContent = item.description;
 
         textContainer.appendChild(title);
         textContainer.appendChild(description);

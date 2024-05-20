@@ -159,3 +159,5 @@ document.getElementById('next-page').addEventListener('click', function() {
     highlightCurrentPageButton(newPageIndex);
   }
 });
+
+window.renderCharacters = renderCharacters;
