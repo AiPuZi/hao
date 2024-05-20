@@ -32,32 +32,22 @@ function renderCharacters(pageIndex) {
         var characterBox = document.createElement('div');
         characterBox.classList.add('character-box');
 
-// 为每个汉字创建一个SVG元素作为背景，并用它作为HanziWriter的目标
+// 创建汉字写作实例的目标SVG元素
 const svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 svgElement.setAttribute("width", "100");
 svgElement.setAttribute("height", "100");
-const svgId = 'character-target-' + (pageIndex * pageSize + index); // 确保ID的唯一性
-svgElement.setAttribute("id", svgId);
+svgElement.setAttribute("id", 'character-svg-' + char); // 确保ID的唯一性
 
-// 创建线条并添加到SVG元素中
-function createLine(attributes) {
-  const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-  for (const attr in attributes) {
-    line.setAttribute(attr, attributes[attr]);
-  }
-  return line;
-}
-
-// 定义线条属性并添加线条
+// 添加自定义网格线条
 const lines = [
-  {x1: "0", y1: "0", x2: "100", y2: "0", stroke: "#DDD"},
-  {x1: "100", y1: "0", x2: "100", y2: "100", stroke: "#DDD"},
-  {x1: "100", y1: "100", x2: "0", y2: "100", stroke: "#DDD"},
-  {x1: "0", y1: "100", x2: "0", y2: "0", stroke: "#DDD"},
-  {x1: "0", y1: "0", x2: "100", y2: "100", stroke: "#DDD"},
-  {x1: "100", y1: "0", x2: "0", y2: "100", stroke: "#DDD"},
-  {x1: "50", y1: "0", x2: "50", y2: "100", stroke: "#DDD"},
-  {x1: "0", y1: "50", x2: "100", y2: "50", stroke: "#DDD"}
+  { x1: "0", y1: "0", x2: "100", y2: "0", stroke: "#DDD" },
+  { x1: "100", y1: "0", x2: "100", y2: "100", stroke: "#DDD" },
+  { x1: "100", y1: "100", x2: "0", y2: "100", stroke: "#DDD" },
+  { x1: "0", y1: "100", x2: "0", y2: "0", stroke: "#DDD" },
+  { x1: "0", y1: "0", x2: "100", y2: "100", stroke: "#DDD" },
+  { x1: "100", y1: "0", x2: "0", y2: "100", stroke: "#DDD" },
+  { x1: "50", y1: "0", x2: "50", y2: "100", stroke: "#DDD" },
+  { x1: "0", y1: "50", x2: "100", y2: "50", stroke: "#DDD" }
 ];
 
 lines.forEach(lineConfig => {
@@ -65,7 +55,6 @@ lines.forEach(lineConfig => {
   svgElement.appendChild(line);
 });
 
-// 将SVG添加到characterBox中
 characterBox.appendChild(svgElement);
       
         var pinyinDiv = document.createElement('div');
