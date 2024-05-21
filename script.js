@@ -50,9 +50,8 @@ function renderCharacters() {
     
     const pinyinDiv = document.createElement('div');
     pinyinDiv.classList.add('pinyin');
-    // 使用pinyin库转换汉字为拼音，并简化调用方式
-    const charPinyin = pinyin(char, { style: pinyin.STYLE_TONE2 });
-    pinyinDiv.textContent = charPinyin[0];
+    const charPinyin = pinyin(char, { style: pinyin.STYLE_TONE });
+    pinyinDiv.textContent = charPinyin.join(' '); // 将拼音数组连接为字符串显示
     characterBox.appendChild(pinyinDiv);
 
     const characterTargetDiv = document.createElement('div');
@@ -114,13 +113,33 @@ function renderPagination() {
   paginationContainer.innerHTML = ''; // 清空分页按钮
 
   const totalPages = Math.ceil(characters.length / pageSize); // 计算总页数
+
+  // 添加上一页按钮
+  const prevPageButton = document.createElement('button');
+  prevPageButton.id = 'prev-page';
+  prevPageButton.innerHTML = '&lt;'; // 使用 < 字符
+  prevPageButton.onclick = showPrevPage;
+  prevPageButton.disabled = currentPageIndex === 0;
+  paginationContainer.appendChild(prevPageButton);
+
+  // 添加下一页按钮
+  const nextPageButton = document.createElement('button');
+  nextPageButton.id = 'next-page';
+  nextPageButton.innerHTML = '&gt;'; // 使用 > 字符
+  nextPageButton.onclick = showNextPage;
+  nextPageButton.disabled = currentPageIndex === totalPages - 1;
+  paginationContainer.appendChild(nextPageButton);
+
+  // 如果总页数小于等于1，直接返回，不再渲染页码按钮
+  if (totalPages <= 1) {
+    return;
+  }
+
+  // 添加页码按钮
   const groupIndex = Math.floor(currentPageIndex / pageGroupSize); // 当前页码组索引
   const startPage = groupIndex * pageGroupSize; // 当前页码组的起始页码
   const endPage = Math.min(startPage + pageGroupSize, totalPages); // 当前页码组的结束页码
-}
 
-
-  // 添加页码按钮
   for (let i = startPage; i < endPage; i++) {
     const pageBtn = document.createElement('button');
     pageBtn.innerText = i + 1;
@@ -134,6 +153,7 @@ function renderPagination() {
     })(i);
     paginationContainer.appendChild(pageBtn);
   }
+}
 
 // 上一页和下一页函数
 function showPrevPage() {
@@ -152,3 +172,5 @@ function showNextPage() {
     renderPagination();
   }
 }
+
+
