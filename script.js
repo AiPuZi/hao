@@ -114,21 +114,17 @@ function renderPagination() {
 
   const totalPages = Math.ceil(characters.length / pageSize); // 计算总页数
 
-  // 添加上一页按钮
-  const prevPageButton = document.createElement('button');
-  prevPageButton.id = 'prev-page';
-  prevPageButton.innerHTML = '&lt;'; // 使用 < 字符
-  prevPageButton.onclick = showPrevPage;
-  prevPageButton.disabled = currentPageIndex === 0;
-  paginationContainer.appendChild(prevPageButton);
+  // 获取现有的上一页和下一页按钮
+  const prevPageButton = document.getElementById('prev-page');
+  const nextPageButton = document.getElementById('next-page');
 
-  // 添加下一页按钮
-  const nextPageButton = document.createElement('button');
-  nextPageButton.id = 'next-page';
-  nextPageButton.innerHTML = '&gt;'; // 使用 > 字符
-  nextPageButton.onclick = showNextPage;
+  // 设置上一页按钮的属性和事件
+  prevPageButton.disabled = currentPageIndex === 0;
+  prevPageButton.onclick = showPrevPage;
+
+  // 设置下一页按钮的属性和事件
   nextPageButton.disabled = currentPageIndex === totalPages - 1;
-  paginationContainer.appendChild(nextPageButton);
+  nextPageButton.onclick = showNextPage;
 
   // 如果总页数小于等于1，直接返回，不再渲染页码按钮
   if (totalPages <= 1) {
