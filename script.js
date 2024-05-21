@@ -51,9 +51,8 @@ function renderCharacters() {
     const pinyinDiv = document.createElement('div');
     pinyinDiv.classList.add('pinyin');
     // 使用pinyin库转换汉字为拼音，并简化调用方式
-    const charPinyin = pinyin(char, { style: pinyin.STYLE_NORMAL });
-    // 从二维数组中提取拼音，并将其设置为文本内容
-    pinyinDiv.textContent = charPinyin[0][0]; // 正确处理返回值
+    const charPinyin = pinyin(char, { style: pinyin.STYLE_TONE2 });
+    pinyinDiv.textContent = charPinyin[0];
     characterBox.appendChild(pinyinDiv);
 
     const characterTargetDiv = document.createElement('div');
