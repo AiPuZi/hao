@@ -111,7 +111,8 @@ function renderCharacters() {
       });
     });
   } else if (currentCategory === 'pinyin') {
-    // 拼音分类的渲染逻辑
+    
+// 拼音分类的渲染逻辑
 textContainer.style.display = 'grid'; // 使用 grid 布局
 textContainer.style.gridTemplateRows = 'repeat(5, 1fr)'; // 设置为5行，每行占满整个容器
 textContainer.style.gridTemplateColumns = '1fr'; // 设置为1列，每列占满整个容器
@@ -121,35 +122,46 @@ textContainer.innerHTML = ''; // 清空容器内部的内容
 // 创建并添加大行元素
 for (let i = 0; i < 5; i++) {
     let bigRow = document.createElement('div');
-    bigRow.textContent = `大行 ${i+1}`; // 可选：添加文本内容
     bigRow.classList.add('big-row'); // 可选：添加类名进行样式控制
     textContainer.appendChild(bigRow);
 }
 
-    pageItems.forEach(function(char, index) {
-      const characterBox = document.createElement('div');
-      characterBox.classList.add('character-box');
+// 样式设置为微软雅黑
+document.body.style.fontFamily = '微软雅黑, sans-serif';
 
-      const charDiv = document.createElement('div');
-      charDiv.textContent = char; // 直接显示汉字
-      characterBox.appendChild(charDiv);
+// 示例数据
+const pageItems = [
+    "b", "p", "m", "f", "卜", "八", "人", "入", "儿", "匕", "几", "九", "刁", "了", "刀"
+];
 
-      const pinyinDiv = document.createElement('div');
-      pinyinDiv.classList.add('pinyin');
-      const charPinyin = pinyin(char, { style: pinyin.STYLE_NORMAL });
-      pinyinDiv.textContent = charPinyin[0][0]; // 取第一个音节的拼音
-      characterBox.appendChild(pinyinDiv);
+// 创建并添加字符和发音按钮
+pageItems.forEach(function(char) {
+    const characterBox = document.createElement('div');
+    characterBox.classList.add('character-box');
 
-      // 创建发音按钮
-      const pronounceButton = document.createElement('button');
-      pronounceButton.textContent = '发音';
-      pronounceButton.style.marginTop = '5px'; // 设置按钮与拼音的间距
-      characterBox.appendChild(pronounceButton);
+    const charDiv = document.createElement('div');
+    charDiv.textContent = char; // 直接显示汉字
+    characterBox.appendChild(charDiv);
 
-      textContainer.appendChild(characterBox);
+    // 创建按钮容器
+    const buttonsDiv = document.createElement('div');
+    buttonsDiv.style.marginTop = '5px'; // 设置按钮与文字的间距
 
-      // 为发音按钮添加点击事件
-      pronounceButton.addEventListener('click', function() {
+    // 创建发音按钮（使用Font Awesome图标）
+    const pronounceButton = document.createElement('button');
+    pronounceButton.innerHTML = '<i class="fas fa-volume-up"></i>';
+    pronounceButton.style.background = 'none'; // 去除按钮默认样式
+    pronounceButton.style.border = 'none';
+    pronounceButton.style.cursor = 'pointer';
+    pronounceButton.style.fontSize = '24px'; // 设置图标大小
+    pronounceButton.style.color = 'gray'; // 设置图标颜色为灰色
+
+    buttonsDiv.appendChild(pronounceButton);
+    characterBox.appendChild(buttonsDiv);
+    textContainer.appendChild(characterBox);
+
+    // 为发音按钮添加点击事件
+    pronounceButton.addEventListener('click', function() {
         // 创建一个SpeechSynthesisUtterance的实例
         const msg = new SpeechSynthesisUtterance();
 
@@ -163,10 +175,8 @@ for (let i = 0; i < 5; i++) {
         window.speechSynthesis.speak(msg);
 
         console.log('播放汉字“' + char + '”的发音');
-      });
     });
-  }
-}
+});
 
 // 渲染分页按钮
 function renderPagination() {
