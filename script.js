@@ -19,8 +19,8 @@ document.addEventListener('DOMContentLoaded', function() {
   navLinks.forEach(function(navLink) {
     navLink.addEventListener('click', function(event) {
       event.preventDefault(); // 防止默认行为
-      const category = navLink.getAttribute('href').substring(1); // 提取链接的锚点部分作为类别
-      loadCategoryData(category + '.json');
+      currentCategory = navLink.getAttribute('href').substring(1); // 更新当前分类
+      loadCategoryData(currentCategory + '.json'); // 加载对应分类的数据
     });
   });
 });
@@ -134,7 +134,7 @@ function renderCharacters() {
       const pinyinDiv = document.createElement('div');
       pinyinDiv.classList.add('pinyin');
       const charPinyin = pinyin(char, { style: pinyin.STYLE_NORMAL });
-      pinyinDiv.textContent = charPinyin[0][0]; // 正确处理返回值
+      pinyinDiv.textContent = charPinyin[0][0]; // 取第一个音节的拼音
       characterBox.appendChild(pinyinDiv);
 
       // 创建发音按钮
