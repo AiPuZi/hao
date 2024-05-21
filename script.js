@@ -113,7 +113,8 @@ function renderCharacters() {
   } else if (currentCategory === 'pinyin') {
     // 拼音分类的渲染逻辑
     textContainer.style.display = 'grid'; // 使用 grid 布局
-    textContainer.style.gridTemplateColumns = 'repeat(9, 1fr)'; // 9列
+    textContainer.style.gridTemplateRows = 'repeat(5, 1fr)'; // 设置为5行，每行占满整个容器
+    textContainer.style.gridTemplateColumns = '1fr'; // 设置为1列，每列占满整个容器
     textContainer.style.gridGap = '10px'; // 设置间距
 
     pageItems.forEach(function(char, index) {
