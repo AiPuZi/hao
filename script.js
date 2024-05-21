@@ -1,6 +1,3 @@
-import HanziWriter from 'hanzi-writer';
-import pinyin from 'pinyin';
-
 let currentPageIndex = 0; // 当前页码，初始化为 0
 const pageSize = 30; // 每页显示的汉字数
 const pageGroupSize = 10; // 每组显示的页码数
@@ -35,7 +32,7 @@ function loadCategoryData(jsonFile) {
     .catch(error => console.error('Error fetching JSON:', error));
 }
 
-// 渲染汉字
+// 渲染汉字和拼音
 function renderCharacters() {
   const textContainer = document.getElementById('text-container');
   textContainer.innerHTML = ''; // 清空内容
@@ -48,62 +45,38 @@ function renderCharacters() {
     const characterBox = document.createElement('div');
     characterBox.classList.add('character-box');
     
+    const hanziDiv = document.createElement('div');
+    hanziDiv.classList.add('hanzi');
+    hanziDiv.textContent = char; // 汉字文本
+    characterBox.appendChild(hanziDiv);
+
     const pinyinDiv = document.createElement('div');
     pinyinDiv.classList.add('pinyin');
     const charPinyin = pinyin(char, { style: pinyin.STYLE_TONE });
-    pinyinDiv.textContent = charPinyin.join(' '); // 将拼音数组连接为字符串显示
+    pinyinDiv.textContent = charPinyin.join(' '); // 拼音文本
     characterBox.appendChild(pinyinDiv);
 
-    const characterTargetDiv = document.createElement('div');
-    characterTargetDiv.classList.add('hanzi');
-    characterTargetDiv.id = 'character-target-div-' + (currentPageIndex * pageSize + index); // 为每个汉字创建唯一的ID
-    characterBox.appendChild(characterTargetDiv);
-
-    const buttonsDiv = document.createElement('div');
-    buttonsDiv.classList.add('button-container');
-
-    // 创建播放动画按钮
-    const animateButton = document.createElement('button');
-    animateButton.innerHTML = '<i class="fas fa-play"></i>';
-    buttonsDiv.appendChild(animateButton);
-
-    // 创建发音按钮
     const pronounceButton = document.createElement('button');
-    pronounceButton.innerHTML = '<i class="fas fa-volume-up"></i>';
-    buttonsDiv.appendChild(pronounceButton);
+    pronounceButton.innerHTML = '<i class="fas fa-volume-up"></i> 发音';
+    pronounceButton.classList.add('pronounce-button');
+    pronounceButton.onclick = function() {
+      // 创建一个SpeechSynthesisUtterance的实例
+      const msg = new SpeechSynthesisUtterance();
+      
+      // 设置要朗读的文本为当前汉字
+      msg.text = char;
+      
+      // 设置语言为中文普通话
+      msg.lang = 'zh-CN';
+      
+      // 使用SpeechSynthesis接口的speak方法来播放语音
+      window.speechSynthesis.speak(msg);
+      
+      console.log('播放汉字“' + char + '”的发音');
+    };
 
-    characterBox.appendChild(buttonsDiv);
+    characterBox.appendChild(pronounceButton);
     textContainer.appendChild(characterBox);
-
-    // 创建汉字写作实例
-    const writer = HanziWriter.create(characterTargetDiv.id, char, {
-        width: 100,
-        height: 100,
-        padding: 5,
-        showOutline: true // 显示汉字轮廓
-    });
-
-    // 为播放动画按钮添加点击事件，并在此处使用writer实例
-    animateButton.addEventListener('click', function() {
-        writer.animateCharacter();
-    });
-
-    // 为发音按钮添加点击事件
-    pronounceButton.addEventListener('click', function() {
-        // 创建一个SpeechSynthesisUtterance的实例
-        const msg = new SpeechSynthesisUtterance();
-        
-        // 设置要朗读的文本为当前汉字
-        msg.text = char;
-        
-        // 设置语言为中文普通话
-        msg.lang = 'zh-CN';
-        
-        // 使用SpeechSynthesis接口的speak方法来播放语音
-        window.speechSynthesis.speak(msg);
-        
-        console.log('播放汉字“' + char + '”的发音');
-    });
   });
 }
 
@@ -168,5 +141,3 @@ function showNextPage() {
     renderPagination();
   }
 }
-
-
