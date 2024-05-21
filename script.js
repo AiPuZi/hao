@@ -10,6 +10,16 @@ var characters = []; // 将从 JSON 文件中动态加载
 document.addEventListener('DOMContentLoaded', function() {
   // 初始加载第一页汉字
   loadCategoryData('chinese.json');
+
+  // 绑定导航链接的点击事件
+  var navLinks = document.querySelectorAll('.navigation a');
+  navLinks.forEach(function(navLink) {
+    navLink.addEventListener('click', function(event) {
+      event.preventDefault(); // 防止链接默认导航行为
+      var category = navLink.getAttribute('href').substring(1); // 提取链接的锚点部分作为类别
+      loadCategoryData(category + '.json'); // 加载对应分类的数据
+    });
+  });
 });
 
 // 加载分类数据
