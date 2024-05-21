@@ -8,16 +8,6 @@ var characters = []; // 将从 JSON 文件中动态加载
 
 // 页面加载完成后执行
 document.addEventListener('DOMContentLoaded', function() {
-  // 导航功能绑定
-  var navLinks = document.querySelectorAll('.navigation a');
-  navLinks.forEach(function(navLink) {
-    navLink.addEventListener('click', function(event) {
-      event.preventDefault(); // 防止链接默认导航行为
-      var category = navLink.getAttribute('href').substring(1); // 提取链接的锚点部分作为类别
-      loadCategoryData(category + '.json'); // 加载对应分类的数据
-    });
-  });
-
   // 初始加载第一页汉字
   loadCategoryData('chinese.json');
 });
@@ -30,19 +20,19 @@ function loadCategoryData(jsonFile) {
       characters = data; // 将加载的数据赋值给 characters 变量
       currentPageIndex = 0; // 重置当前页码为 0
       renderPagination(); // 渲染分页按钮
-      renderCharacters(currentPageIndex); // 加载第一页的内容
+      renderCharacters(); // 加载第一页的内容
     })
     .catch(error => console.error('Error fetching JSON:', error));
 }
 
 // 渲染汉字
-function renderCharacters(pageIndex) {
+function renderCharacters() {
   var textContainer = document.getElementById('text-container');
   textContainer.innerHTML = ''; // 清空内容
 
-  var start = pageIndex * pageSize; // 计算当前页面的起始汉字索引
+  var start = currentPageIndex * pageSize; // 计算当前页面的起始汉字索引
   var end = start + pageSize; // 计算当前页面的结束汉字索引
-  var pageCharacters = characters.slice(start, end); // 获取当前页面的汉字
+  var pageCharacters = characters.slice(start, end); 
   
     pageCharacters.forEach(function(char, index) {
         var characterBox = document.createElement('div');
@@ -119,59 +109,52 @@ function renderPagination() {
   var startPage = groupIndex * pageGroupSize; // 当前页码组的起始页码
   var endPage = Math.min(startPage + pageGroupSize, totalPages); // 当前页码组的结束页码
 
+  // 添加上一页按钮
+  var prevPageButton = document.createElement('button');
+  prevPageButton.id = 'prev-page';
+  prevPageButton.innerHTML = '&lt;'; // 使用 < 字符
+  prevPageButton.onclick = showPrevPage;
+  prevPageButton.disabled = currentPageIndex === 0;
+  paginationContainer.appendChild(prevPageButton);
+
   // 添加页码按钮
   for (var i = startPage; i < endPage; i++) {
     var pageBtn = document.createElement('button');
     pageBtn.innerText = i + 1;
+    pageBtn.className = currentPageIndex === i ? 'active' : '';
     pageBtn.onclick = (function(i) {
       return function() {
         currentPageIndex = i;
-        renderCharacters(i);
-        highlightCurrentPageButton(i);
+        renderCharacters();
+        renderPagination();
       };
     })(i);
     paginationContainer.appendChild(pageBtn);
   }
 
-  highlightCurrentPageButton(currentPageIndex); // 高亮当前页码按钮
+  // 添加下一页按钮
+  var nextPageButton = document.createElement('button');
+  nextPageButton.id = 'next-page';
+  nextPageButton.innerHTML = '&gt;'; // 使用 > 字符
+  nextPageButton.onclick = showNextPage;
+  nextPageButton.disabled = currentPageIndex === totalPages - 1;
+  paginationContainer.appendChild(nextPageButton);
 }
 
-// 高亮当前页面按钮
-function highlightCurrentPageButton(pageIndex) {
-  var buttons = document.getElementById('pagination-container').getElementsByTagName('button');
-  for (var button of buttons) {
-    button.classList.remove('active');
-  }
-  buttons[pageIndex % pageGroupSize].classList.add('active');
-}
-
-// 上一页按钮点击事件
-document.getElementById('prev-page').addEventListener('click', function() {
+// 上一页和下一页函数
+function showPrevPage() {
   if (currentPageIndex > 0) {
-    var newPageIndex = currentPageIndex - 1;
-    currentPageIndex = newPageIndex;
-    renderCharacters(newPageIndex);
-
-    // 如果跳到了前一组的最后一页，重新渲染分页按钮
-    if (newPageIndex % pageGroupSize === pageGroupSize - 1) {
-      renderPagination();
-    }
-    highlightCurrentPageButton(newPageIndex);
+    currentPageIndex--;
+    renderCharacters();
+    renderPagination();
   }
-});
+}
 
-// 下一页按钮点击事件
-document.getElementById('next-page').addEventListener('click', function() {
+function showNextPage() {
   var totalPages = Math.ceil(characters.length / pageSize);
   if (currentPageIndex < totalPages - 1) {
-    var newPageIndex = currentPageIndex + 1;
-    currentPageIndex = newPageIndex;
-    renderCharacters(newPageIndex);
-
-    // 如果跳到了下一组的第一页，重新渲染分页按钮
-    if (newPageIndex % pageGroupSize === 0) {
-      renderPagination();
-    }
-    highlightCurrentPageButton(newPageIndex);
+    currentPageIndex++;
+    renderCharacters();
+    renderPagination();
   }
-});
+}
