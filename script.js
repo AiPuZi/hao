@@ -112,10 +112,19 @@ function renderCharacters() {
     });
   } else if (currentCategory === 'pinyin') {
     // 拼音分类的渲染逻辑
-    textContainer.style.display = 'grid'; // 使用 grid 布局
-    textContainer.style.gridTemplateRows = 'repeat(5, 1fr)'; // 设置为5行，每行占满整个容器
-    textContainer.style.gridTemplateColumns = '1fr'; // 设置为1列，每列占满整个容器
-    textContainer.style.gridGap = '10px'; // 设置间距
+textContainer.style.display = 'grid'; // 使用 grid 布局
+textContainer.style.gridTemplateRows = 'repeat(5, 1fr)'; // 设置为5行，每行占满整个容器
+textContainer.style.gridTemplateColumns = '1fr'; // 设置为1列，每列占满整个容器
+textContainer.style.gridGap = '10px'; // 设置间距
+textContainer.innerHTML = ''; // 清空容器内部的内容
+
+// 创建并添加大行元素
+for (let i = 0; i < 5; i++) {
+    let bigRow = document.createElement('div');
+    bigRow.textContent = `大行 ${i+1}`; // 可选：添加文本内容
+    bigRow.classList.add('big-row'); // 可选：添加类名进行样式控制
+    textContainer.appendChild(bigRow);
+}
 
     pageItems.forEach(function(char, index) {
       const characterBox = document.createElement('div');
