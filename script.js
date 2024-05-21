@@ -1,3 +1,6 @@
+import HanziWriter from 'hanzi-writer';
+import pinyin from 'pinyin';
+
 let currentPageIndex = 0; // 当前页码，初始化为 0
 const pageSize = 30; // 每页显示的汉字数
 const pageGroupSize = 10; // 每组显示的页码数
@@ -41,41 +44,33 @@ function renderCharacters() {
   const end = start + pageSize; // 计算当前页面的结束汉字索引
   const pageCharacters = characters.slice(start, end); 
   
-  pageCharacters.forEach(function(char, index) {
+  pageCharacters.forEach(function(char) {
     const characterBox = document.createElement('div');
     characterBox.classList.add('character-box');
-    
-    const hanziDiv = document.createElement('div');
-    hanziDiv.classList.add('hanzi');
-    hanziDiv.textContent = char; // 汉字文本
-    characterBox.appendChild(hanziDiv);
+
+    const characterDiv = document.createElement('div');
+    characterDiv.classList.add('hanzi');
+    characterDiv.textContent = char;
+    characterBox.appendChild(characterDiv);
 
     const pinyinDiv = document.createElement('div');
     pinyinDiv.classList.add('pinyin');
     const charPinyin = pinyin(char, { style: pinyin.STYLE_TONE });
-    pinyinDiv.textContent = charPinyin.join(' '); // 拼音文本
+    pinyinDiv.textContent = charPinyin.join(' '); // 将拼音数组连接为字符串显示
     characterBox.appendChild(pinyinDiv);
 
     const pronounceButton = document.createElement('button');
-    pronounceButton.innerHTML = '<i class="fas fa-volume-up"></i> 发音';
+    pronounceButton.innerHTML = '<i class="fas fa-volume-up"></i>';
     pronounceButton.classList.add('pronounce-button');
-    pronounceButton.onclick = function() {
-      // 创建一个SpeechSynthesisUtterance的实例
+    pronounceButton.addEventListener('click', function() {
       const msg = new SpeechSynthesisUtterance();
-      
-      // 设置要朗读的文本为当前汉字
       msg.text = char;
-      
-      // 设置语言为中文普通话
       msg.lang = 'zh-CN';
-      
-      // 使用SpeechSynthesis接口的speak方法来播放语音
       window.speechSynthesis.speak(msg);
-      
       console.log('播放汉字“' + char + '”的发音');
-    };
-
+    });
     characterBox.appendChild(pronounceButton);
+
     textContainer.appendChild(characterBox);
   });
 }
