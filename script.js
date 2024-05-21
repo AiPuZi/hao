@@ -15,9 +15,9 @@ document.addEventListener('DOMContentLoaded', function() {
   const navLinks = document.querySelectorAll('.navigation a');
   navLinks.forEach(function(navLink) {
     navLink.addEventListener('click', function(event) {
-      event.preventDefault(); // 防止链接默认导航行为
+      event.preventDefault(); // 防止默认行为
       const category = navLink.getAttribute('href').substring(1); // 提取链接的锚点部分作为类别
-      loadCategoryData(category + '.json'); // 加载对应分类的数据
+      loadCategoryData(category + '.json');
     });
   });
 });
