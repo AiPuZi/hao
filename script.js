@@ -117,14 +117,8 @@ function renderPagination() {
   const groupIndex = Math.floor(currentPageIndex / pageGroupSize); // 当前页码组索引
   const startPage = groupIndex * pageGroupSize; // 当前页码组的起始页码
   const endPage = Math.min(startPage + pageGroupSize, totalPages); // 当前页码组的结束页码
+}
 
-  // 添加上一页按钮
-  const prevPageButton = document.createElement('button');
-  prevPageButton.id = 'prev-page';
-  prevPageButton.innerHTML = '&lt;'; // 使用 < 字符
-  prevPageButton.onclick = showPrevPage;
-  prevPageButton.disabled = currentPageIndex === 0;
-  paginationContainer.appendChild(prevPageButton);
 
   // 添加页码按钮
   for (let i = startPage; i < endPage; i++) {
@@ -140,15 +134,6 @@ function renderPagination() {
     })(i);
     paginationContainer.appendChild(pageBtn);
   }
-
-  // 添加下一页按钮
-  const nextPageButton = document.createElement('button');
-  nextPageButton.id = 'next-page';
-  nextPageButton.innerHTML = '&gt;'; // 使用 > 字符
-  nextPageButton.onclick = showNextPage;
-  nextPageButton.disabled = currentPageIndex === totalPages - 1;
-  paginationContainer.appendChild(nextPageButton);
-}
 
 // 上一页和下一页函数
 function showPrevPage() {
