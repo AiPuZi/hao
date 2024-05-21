@@ -113,19 +113,12 @@ function renderCharacters() {
   } else if (currentCategory === 'pinyin') {
     // 拼音分类的渲染逻辑
     textContainer.style.display = 'grid'; // 使用 grid 布局
-    textContainer.style.gridTemplateColumns = 'repeat(auto-fill, minmax(100px, 1fr))'; // 自动填充列，每列最小宽度100px
-    textContainer.style.gridRowGap = '10px'; // 设置行间距
-    textContainer.style.gridColumnGap = '10px'; // 设置列间距
+    textContainer.style.gridTemplateColumns = 'repeat(9, 1fr)'; // 9列
+    textContainer.style.gridGap = '10px'; // 设置间距
 
-    // 每行显示的汉字数，根据容器宽度和汉字盒子的最小宽度计算
-    const charactersPerRow = 5;
-    const numberOfRows = 5; // 设置为5行
-    const charactersToShow = pageItems.slice(0, charactersPerRow * numberOfRows);
-
-    charactersToShow.forEach(function(char, index) {
+    pageItems.forEach(function(char, index) {
       const characterBox = document.createElement('div');
       characterBox.classList.add('character-box');
-      characterBox.style.textAlign = 'center'; // 设置文本居中
 
       const charDiv = document.createElement('div');
       charDiv.textContent = char; // 直接显示汉字
