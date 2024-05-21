@@ -8,16 +8,32 @@ var characters = []; // 将从 JSON 文件中动态加载
 
 // 页面加载完成后执行
 document.addEventListener('DOMContentLoaded', function() {
-  // 使用 Fetch API 异步加载 chinese.json 文件
-  fetch('chinese.json')
+  // 导航功能绑定
+  var navLinks = document.querySelectorAll('.navigation a');
+  navLinks.forEach(function(navLink) {
+    navLink.addEventListener('click', function(event) {
+      event.preventDefault(); // 防止链接默认导航行为
+      var category = navLink.getAttribute('href').substring(1); // 提取链接的锚点部分作为类别
+      loadCategoryData(category + '.json'); // 加载对应分类的数据
+    });
+  });
+
+  // 初始加载第一页汉字
+  loadCategoryData('chinese.json');
+});
+
+// 加载分类数据
+function loadCategoryData(jsonFile) {
+  fetch(jsonFile)
     .then(response => response.json())
     .then(data => {
       characters = data; // 将加载的数据赋值给 characters 变量
+      currentPageIndex = 0; // 重置当前页码为 0
       renderPagination(); // 渲染分页按钮
-      renderCharacters(currentPageIndex); // 初始加载第一页汉字
+      renderCharacters(currentPageIndex); // 加载第一页的内容
     })
     .catch(error => console.error('Error fetching JSON:', error));
-});
+}
 
 // 渲染汉字
 function renderCharacters(pageIndex) {
