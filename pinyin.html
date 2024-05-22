@@ -82,6 +82,7 @@
       color: white;
       text-decoration: none;
       border-radius: 5px;
+      cursor: pointer; /* 显示手指形状 */
     }
 
     .cell a.button:hover {
@@ -289,52 +290,52 @@
         <p class="text-center">整体认读章节共16个:zhi chi shi ri zi ci si yi wu yu ye yue yuan yin yun ying</p>
         <div class="grid-x grid-padding-x">
           <div class="large-3 medium-3 small-4 cell">
-            <a class="button expanded chinesepinyin3" mp3="mp3/zhi1.mp3">zhi</a>
+            <a class="button expanded chinesepinyin3" mp3="mp3/zhi.mp3">zhi</a>
           </div>
           <div class="large-3 medium-3 small-4 cell">
-            <a class="button expanded chinesepinyin3" mp3="mp3/chi1.mp3">chi</a>
+            <a class="button expanded chinesepinyin3" mp3="mp3/chi.mp3">chi</a>
           </div>
           <div class="large-3 medium-3 small-4 cell">
-            <a class="button expanded chinesepinyin3" mp3="mp3/shi1.mp3">shi</a>
+            <a class="button expanded chinesepinyin3" mp3="mp3/shi.mp3">shi</a>
           </div>
           <div class="large-3 medium-3 small-4 cell">
-            <a class="button expanded chinesepinyin3" mp3="mp3/ri1.mp3">ri</a>
+            <a class="button expanded chinesepinyin3" mp3="mp3/ri.mp3">ri</a>
           </div>
           <div class="large-3 medium-3 small-4 cell">
-            <a class="button expanded chinesepinyin3" mp3="mp3/zi1.mp3">zi</a>
+            <a class="button expanded chinesepinyin3" mp3="mp3/zi.mp3">zi</a>
           </div>
           <div class="large-3 medium-3 small-4 cell">
-            <a class="button expanded chinesepinyin3" mp3="mp3/ci1.mp3">ci</a>
+            <a class="button expanded chinesepinyin3" mp3="mp3/ci.mp3">ci</a>
           </div>
           <div class="large-3 medium-3 small-4 cell">
-            <a class="button expanded chinesepinyin3" mp3="mp3/si1.mp3">si</a>
+            <a class="button expanded chinesepinyin3" mp3="mp3/si.mp3">si</a>
           </div>
           <div class="large-3 medium-3 small-4 cell">
-            <a class="button expanded chinesepinyin3" mp3="mp3/yi1.mp3">yi</a>
+            <a class="button expanded chinesepinyin3" mp3="mp3/yi.mp3">yi</a>
           </div>
           <div class="large-3 medium-3 small-4 cell">
-            <a class="button expanded chinesepinyin3" mp3="mp3/wu1.mp3">wu</a>
+            <a class="button expanded chinesepinyin3" mp3="mp3/wu.mp3">wu</a>
           </div>
           <div class="large-3 medium-3 small-4 cell">
-            <a class="button expanded chinesepinyin3" mp3="mp3/yu1.mp3">yu</a>
+            <a class="button expanded chinesepinyin3" mp3="mp3/yu.mp3">yu</a>
           </div>
           <div class="large-3 medium-3 small-4 cell">
-            <a class="button expanded chinesepinyin3" mp3="mp3/ye1.mp3">ye</a>
+            <a class="button expanded chinesepinyin3" mp3="mp3/ye.mp3">ye</a>
           </div>
           <div class="large-3 medium-3 small-4 cell">
-            <a class="button expanded chinesepinyin3" mp3="mp3/yue1.mp3">yue</a>
+            <a class="button expanded chinesepinyin3" mp3="mp3/yue.mp3">yue</a>
           </div>
           <div class="large-3 medium-3 small-4 cell">
-            <a class="button expanded chinesepinyin3" mp3="mp3/yuan1.mp3">yuɑn</a>
+            <a class="button expanded chinesepinyin3" mp3="mp3/yuan.mp3">yuɑn</a>
           </div>
           <div class="large-3 medium-3 small-4 cell">
-            <a class="button expanded chinesepinyin3" mp3="mp3/yin1.mp3">yin</a>
+            <a class="button expanded chinesepinyin3" mp3="mp3/yin.mp3">yin</a>
           </div>
           <div class="large-3 medium-3 small-4 cell">
-            <a class="button expanded chinesepinyin3" mp3="mp3/yun1.mp3">yun</a>
+            <a class="button expanded chinesepinyin3" mp3="mp3/yun.mp3">yun</a>
           </div>
           <div class="large-3 medium-3 small-4 cell">
-            <a class="button expanded chinesepinyin3" mp3="mp3/ying1.mp3">ying</a>
+            <a class="button expanded chinesepinyin3" mp3="mp3/ying.mp3">ying</a>
           </div>
         </div>
       </div>
@@ -344,6 +345,22 @@
   <footer class="footer">
     <a href="https://www.example.com" target="_blank">ILOVECHINESE.TOP 版权所有</a>
   </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // 获取所有带有class 'chinesepinyin3' 的元素
+      var pinyinButtons = document.querySelectorAll('.chinesepinyin3');
+      
+      // 为每个元素添加点击事件
+      pinyinButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+          var mp3File = button.getAttribute('mp3');
+          var audio = new Audio(mp3File);
+          audio.play();
+        });
+      });
+    });
+  </script>
 
 </body>
 </html>
