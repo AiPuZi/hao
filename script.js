@@ -29,6 +29,7 @@ navLinks.forEach(function(navLink) {
     }
   });
 });
+});
 
 // 加载分类数据
 function loadCategoryData(jsonFile) {
