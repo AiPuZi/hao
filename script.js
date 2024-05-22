@@ -12,27 +12,51 @@ document.addEventListener('DOMContentLoaded', function() {
   loadCategoryData('chinese.json');
 
   // 绑定导航链接的点击事件
-  const navLinks = document.querySelectorAll('.navigation a');
-  navLinks.forEach(function(navLink) {
-    navLink.addEventListener('click', function(event) {
-      event.preventDefault(); // 防止默认行为
-      const category = navLink.getAttribute('href').substring(1); // 提取链接的锚点部分作为类别
-      loadCategoryData(category + '.json');
-    });
+const navLinks = document.querySelectorAll('.navigation a');
+navLinks.forEach(function(navLink) {
+  navLink.addEventListener('click', function(event) {
+    event.preventDefault(); // 防止默认行为
+    const category = navLink.getAttribute('href').substring(1); // 提取链接的锚点部分作为类别
+    let fileToLoad;
+    if (category === 'chinese') {
+      fileToLoad = '/' + category + '.json'; // 如果是 chinese 类别，加载 .json 文件
+    } else {
+      fileToLoad = '/' + category + '.html'; // 其他类别加载 .html 文件
+    }
+    loadCategoryData(fileToLoad); // 加载对应的文件
   });
 });
 
 // 加载分类数据
-function loadCategoryData(jsonFile) {
-  fetch(jsonFile)
-    .then(response => response.json())
-    .then(data => {
-      characters = data; // 将加载的数据赋值给 characters 变量
-      currentPageIndex = 0; // 重置当前页码为 0
-      renderPagination(); // 渲染分页按钮
-      renderCharacters(); // 加载第一页的内容
+function loadCategoryData(fileToLoad) {
+  fetch(fileToLoad)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      if (fileToLoad.endsWith('.json')) {
+        return response.json(); // 如果是 JSON 文件，返回 JSON 格式数据
+      } else if (fileToLoad.endsWith('.html')) {
+        return response.text(); // 如果是 HTML 文件，返回文本内容
+      } else {
+        throw new Error('Unsupported file type');
+      }
     })
-    .catch(error => console.error('Error fetching JSON:', error));
+    .then(data => {
+      if (typeof data === 'object') {
+        // 如果加载的是 JSON 数据
+        characters = data; // 将加载的数据赋值给 characters 变量
+        currentPageIndex = 0; // 重置当前页码为 0
+        renderPagination(); // 渲染分页按钮
+        renderCharacters(); // 加载第一页的内容
+      } else if (typeof data === 'string') {
+        // 如果加载的是 HTML 内容
+        console.log('Loaded HTML content:', data);
+        // 可以根据需要处理加载的 HTML 内容
+        // 例如，如果需要从 HTML 中提取数据或元素，可以在这里进行处理
+      }
+    })
+    .catch(error => console.error('Error fetching file:', error));
 }
 
 // 渲染汉字
