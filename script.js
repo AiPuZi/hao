@@ -11,25 +11,27 @@ document.addEventListener('DOMContentLoaded', function() {
   // 初始加载第一页汉字
   loadCategoryData('chinese.json');
 
-  // 绑定导航链接的点击事件
-  const navLinks = document.querySelectorAll('.navigation a');
-  navLinks.forEach(function(navLink) {
-    navLink.addEventListener('click', function(event) {
-      const href = navLink.getAttribute('href');
-      
-      // 检查链接是否为内部锚点
-      if (href.startsWith('#')) {
-        event.preventDefault(); // 防止默认行为
-        const category = href.substring(1); // 提取链接的锚点部分作为类别
-        loadCategoryData(category + '.json');
-      } else {
-        // 如果不是锚点链接，执行默认的页面跳转
-        window.location.href = href;
-      }
-    });
+   // 绑定导航链接的点击事件
+   const navLinks = document.querySelectorAll('.navigation a');
+   navLinks.forEach(function(navLink) {
+     navLink.addEventListener('click', function(event) {
+       const href = navLink.getAttribute('href');
+       
+       // 检查链接是否为内部锚点
+       if (href.startsWith('#')) {
+         event.preventDefault(); // 防止默认行为
+         const category = href.substring(1); // 提取链接的锚点部分作为类别
+         
+         // 假设有一个函数 loadCategoryPoems 用于加载特定分类的诗词数据
+         loadCategoryPoems(category);
+       } else {
+         // 如果不是锚点链接，执行默认的页面跳转
+         window.location.href = href;
+       }
+     });
+   });
   });
-});
-
+  
 // 加载分类数据
 function loadCategoryData(jsonFile) {
   fetch(jsonFile)
