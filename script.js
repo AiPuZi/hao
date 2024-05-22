@@ -19,17 +19,18 @@ document.addEventListener('DOMContentLoaded', function() {
       
       if (category === 'chinese') {
         event.preventDefault(); // 防止默认行为
-        let fileToLoad = '/' + category + '.json'; // chinese 类别加载 .json 文件
-        loadCategoryData(fileToLoad); // 加载对应的文件
+        loadCategoryData('/chinese.json'); // chinese 类别加载 .json 文件
+      } else if (category === 'pinyin') {
+        event.preventDefault(); // 防止默认行为
+        showPinyinContent(); // 显示 pinyin.html 的内容
       } else {
-        event.preventDefault(); // 防止默认行为，确保不进行页面跳转
-        console.log(`Navigate to ${category}.html`); // 可以根据需要添加日志或其他处理
+        // 其他分类的处理逻辑，例如直接跳转到对应的 .html 页面
       }
     });
   });
 });
 
-// 加载分类数据
+// 加载分类数据的函数
 function loadCategoryData(fileToLoad) {
   fetch(fileToLoad)
     .then(response => {
@@ -45,6 +46,24 @@ function loadCategoryData(fileToLoad) {
       renderCharacters(); // 加载第一页的内容
     })
     .catch(error => console.error('Error fetching JSON file:', error));
+}
+
+// 显示 pinyin.html 的内容
+function showPinyinContent() {
+  // 使用 fetch 或其他合适的方法加载并显示 pinyin.html 的内容
+  fetch('/pinyin.html')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.text(); // 加载 HTML 文件的文本内容
+    })
+    .then(htmlContent => {
+      // 将 pinyin.html 的内容显示在页面上的适当位置
+      const container = document.getElementById('pinyin-container');
+      container.innerHTML = htmlContent;
+    })
+    .catch(error => console.error('Error fetching pinyin.html:', error));
 }
 
 // 渲染汉字
