@@ -15,55 +15,24 @@ document.addEventListener('DOMContentLoaded', function() {
   const navLinks = document.querySelectorAll('.navigation a');
   navLinks.forEach(function(navLink) {
     navLink.addEventListener('click', function(event) {
+      event.preventDefault(); // 防止默认行为
       const category = navLink.getAttribute('href').substring(1); // 提取链接的锚点部分作为类别
-      
-      if (category === 'chinese') {
-        event.preventDefault(); // 防止默认行为
-        loadCategoryData('/chinese.json'); // chinese 类别加载 .json 文件
-      } else if (category === 'pinyin') {
-        event.preventDefault(); // 防止默认行为
-        showPinyinContent(); // 显示 pinyin.html 的内容
-      } else {
-        // 其他分类的处理逻辑，例如直接跳转到对应的 .html 页面
-      }
+      loadCategoryData(category + '.json');
     });
   });
 });
 
-// 加载分类数据的函数
-function loadCategoryData(fileToLoad) {
-  fetch(fileToLoad)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json(); // 加载 JSON 文件
-    })
+// 加载分类数据
+function loadCategoryData(jsonFile) {
+  fetch(jsonFile)
+    .then(response => response.json())
     .then(data => {
       characters = data; // 将加载的数据赋值给 characters 变量
       currentPageIndex = 0; // 重置当前页码为 0
       renderPagination(); // 渲染分页按钮
       renderCharacters(); // 加载第一页的内容
     })
-    .catch(error => console.error('Error fetching JSON file:', error));
-}
-
-// 显示 pinyin.html 的内容
-function showPinyinContent() {
-  // 使用 fetch 或其他合适的方法加载并显示 pinyin.html 的内容
-  fetch('/pinyin.html')
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.text(); // 加载 HTML 文件的文本内容
-    })
-    .then(htmlContent => {
-      // 将 pinyin.html 的内容显示在页面上的适当位置
-      const container = document.getElementById('pinyin-container');
-      container.innerHTML = htmlContent;
-    })
-    .catch(error => console.error('Error fetching pinyin.html:', error));
+    .catch(error => console.error('Error fetching JSON:', error));
 }
 
 // 渲染汉字
