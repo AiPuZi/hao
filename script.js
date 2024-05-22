@@ -12,13 +12,21 @@ document.addEventListener('DOMContentLoaded', function() {
   loadCategoryData('chinese.json');
 
   // 绑定导航链接的点击事件
-  const navLinks = document.querySelectorAll('.navigation a');
-  navLinks.forEach(function(navLink) {
-    navLink.addEventListener('click', function(event) {
-      event.preventDefault(); // 防止默认行为
-      const category = navLink.getAttribute('href').substring(1); // 提取链接的锚点部分作为类别
-      loadCategoryData(category + '.json');
-    });
+const navLinks = document.querySelectorAll('.navigation a');
+navLinks.forEach(function(navLink) {
+  navLink.addEventListener('click', function(event) {
+    event.preventDefault(); // 防止默认行为
+    const hrefValue = navLink.getAttribute('href');
+    const category = hrefValue.startsWith('#') ? hrefValue.substring(1) : hrefValue; // 提取链接的锚点部分作为类别
+
+    // 检查文件类型
+    if (category.endsWith('.json')) { // 如果链接以 .json 结尾
+      loadCategoryData(category);
+    } else if (category.endsWith('.html')) { // 如果链接以 .html 结尾
+      window.location.href = category; // 直接跳转到 HTML 页面
+    } else {
+      console.error('Unsupported file type for category:', category);
+    }
   });
 });
 
