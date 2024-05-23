@@ -48,70 +48,85 @@ function renderCharacters() {
   const textContainer = document.getElementById('text-container');
   textContainer.innerHTML = ''; // 清空内容
 
-  const start = currentPageIndex * pageSize; // 计算当前页面的起始汉字索引
-  const end = start + pageSize; // 计算当前页面的结束汉字索引
-  const pageCharacters = characters.slice(start, end); 
-  
-  pageCharacters.forEach(function(char, index) {
-    const characterBox = document.createElement('div');
-    characterBox.classList.add('character-box');
-    
+  const start = currentPageIndex * pageSize; // 计算当前页面的起始索引
+  const end = start + pageSize; // 计算当前页面的结束索引
+  const pageItems = characters.slice(start, end);
+
+  pageItems.forEach(function(item, index) {
+    const itemBox = document.createElement('div');
+    itemBox.classList.add('character-box');
+
+    // 根据内容类型设置不同的布局
+    if (item.type === 'character') {
+      // 汉字，一行三个格子
+      itemBox.style.flexBasis = 'calc(33.333% - 10px)';
+    } else {
+      // 词组或句子，一行两个格子
+      itemBox.style.flexBasis = 'calc(50% - 10px)';
+    }
+
     const pinyinDiv = document.createElement('div');
     pinyinDiv.classList.add('pinyin');
-    const charPinyin = pinyin(char, { style: pinyin.STYLE_TONE });
-    pinyinDiv.textContent = charPinyin.join(' '); // 将拼音数组连接为字符串显示
-    characterBox.appendChild(pinyinDiv);
+    const itemPinyin = pinyin(item.text, { style: pinyin.STYLE_TONE });
+    pinyinDiv.textContent = itemPinyin.join(' '); // 将拼音数组连接为字符串显示
+    itemBox.appendChild(pinyinDiv);
 
-    const characterTargetDiv = document.createElement('div');
-    characterTargetDiv.classList.add('hanzi');
-    characterTargetDiv.id = 'character-target-div-' + (currentPageIndex * pageSize + index); // 为每个汉字创建唯一的ID
-    characterBox.appendChild(characterTargetDiv);
+    const textDiv = document.createElement('div');
+    textDiv.classList.add(item.type === 'character' ? 'hanzi' : 'phrase-sentence');
+    textDiv.textContent = item.text;
+    itemBox.appendChild(textDiv);
 
     const buttonsDiv = document.createElement('div');
     buttonsDiv.classList.add('button-container');
-
-    // 创建播放动画按钮
-    const animateButton = document.createElement('button');
-    animateButton.innerHTML = '<i class="fas fa-play"></i>';
-    buttonsDiv.appendChild(animateButton);
 
     // 创建发音按钮
     const pronounceButton = document.createElement('button');
     pronounceButton.innerHTML = '<i class="fas fa-volume-up"></i>';
     buttonsDiv.appendChild(pronounceButton);
 
-    characterBox.appendChild(buttonsDiv);
-    textContainer.appendChild(characterBox);
-
-    // 创建汉字写作实例
-    const writer = HanziWriter.create(characterTargetDiv.id, char, {
-        width: 100,
-        height: 100,
-        padding: 5,
-        showOutline: true // 显示汉字轮廓
-    });
-
-    // 为播放动画按钮添加点击事件，并在此处使用writer实例
-    animateButton.addEventListener('click', function() {
-        writer.animateCharacter();
-    });
-
     // 为发音按钮添加点击事件
     pronounceButton.addEventListener('click', function() {
         // 创建一个SpeechSynthesisUtterance的实例
         const msg = new SpeechSynthesisUtterance();
-        
+
         // 设置要朗读的文本为当前汉字
-        msg.text = char;
-        
+        msg.text = item.text;
+
         // 设置语言为中文普通话
         msg.lang = 'zh-CN';
-        
+
         // 使用SpeechSynthesis接口的speak方法来播放语音
         window.speechSynthesis.speak(msg);
-        
-        console.log('播放汉字“' + char + '”的发音');
+
+        console.log('播放“' + item.text + '”的发音');
     });
+
+    // 如果类型是汉字，则添加动画按钮
+    if (item.type === 'character') {
+      // 创建播放动画按钮
+      const animateButton = document.createElement('button');
+      animateButton.innerHTML = '<i class="fas fa-play"></i>';
+      buttonsDiv.appendChild(animateButton);
+      
+      // 为汉字创建唯一的ID
+      textDiv.id = 'character-target-div-' + (currentPageIndex * pageSize + index); 
+
+      // 创建汉字写作实例
+      const writer = HanziWriter.create(textDiv.id, item.text, {
+          width: 100,
+          height: 100,
+          padding: 5,
+          showOutline: true // 显示汉字轮廓
+      });
+
+      // 为播放动画按钮添加点击事件
+      animateButton.addEventListener('click', function() {
+          writer.animateCharacter();
+      });
+    }
+
+    itemBox.appendChild(buttonsDiv);
+    textContainer.appendChild(itemBox);
   });
 }
 
