@@ -214,56 +214,40 @@ function renderPagination() {
 
   const totalPages = Math.ceil(characters.length / pageSize); // 计算总页数
 
-  // 计算页码组的起始页码和结束页码
-  const startPage = Math.floor(currentPageIndex / pageGroupSize) * pageGroupSize;
-  const endPage = Math.min(startPage + pageGroupSize, totalPages);
+  if (totalPages > 1) { // 只有在总页数大于1时才显示分页按钮
+    // 计算页码组的起始页码和结束页码
+    const startPage = Math.floor(currentPageIndex / pageGroupSize) * pageGroupSize;
+    const endPage = Math.min(startPage + pageGroupSize, totalPages);
 
-  // 创建上一页按钮
-  const prevPageButton = document.createElement('button');
-  prevPageButton.textContent = '上一页';
-  prevPageButton.disabled = currentPageIndex === 0; // 在第一页时禁用按钮
-  prevPageButton.addEventListener('click', showPrevPage);
-  paginationContainer.appendChild(prevPageButton);
+    // 创建上一页按钮
+    const prevPageButton = document.createElement('button');
+    prevPageButton.textContent = '上一页';
+    prevPageButton.disabled = currentPageIndex === 0; // 在第一页时禁用按钮
+    prevPageButton.addEventListener('click', showPrevPage);
+    paginationContainer.appendChild(prevPageButton);
 
-  // 创建页码按钮
-  for (let i = startPage; i < endPage; i++) {
-    const pageButton = document.createElement('button');
-    pageButton.textContent = i + 1;
-    pageButton.classList.add('page-button');
-    if (i === currentPageIndex) {
-      pageButton.classList.add('active'); // 高亮当前页码
+    // 创建页码按钮
+    for (let i = startPage; i < endPage; i++) {
+      const pageButton = document.createElement('button');
+      pageButton.textContent = i + 1;
+      pageButton.classList.add('page-button');
+      if (i === currentPageIndex) {
+        pageButton.classList.add('active'); // 高亮当前页码
+      }
+      pageButton.addEventListener('click', function() {
+        currentPageIndex = i;
+        renderPagination();
+        renderCurrentPage();
+      });
+      paginationContainer.appendChild(pageButton);
     }
-    pageButton.addEventListener('click', function() {
-      currentPageIndex = i;
-      renderPagination();
-      renderCurrentPage();
-    });
-    paginationContainer.appendChild(pageButton);
-  }
 
-  // 创建下一页按钮
-  const nextPageButton = document.createElement('button');
-  nextPageButton.textContent = '下一页';
-  nextPageButton.disabled = currentPageIndex === totalPages - 1; // 在最后一页时禁用按钮
-  nextPageButton.addEventListener('click', showNextPage);
-  paginationContainer.appendChild(nextPageButton);
-}
-
-// 显示上一页
-function showPrevPage() {
-  if (currentPageIndex > 0) {
-    currentPageIndex--;
-    renderPagination();
-    renderCurrentPage();
+    // 创建下一页按钮
+    const nextPageButton = document.createElement('button');
+    nextPageButton.textContent = '下一页';
+    nextPageButton.disabled = currentPageIndex === totalPages - 1; // 在最后一页时禁用按钮
+    nextPageButton.addEventListener('click', showNextPage);
+    paginationContainer.appendChild(nextPageButton);
   }
 }
 
-// 显示下一页
-function showNextPage() {
-  const totalPages = Math.ceil(characters.length / pageSize);
-  if (currentPageIndex < totalPages - 1) {
-    currentPageIndex++;
-    renderPagination();
-    renderCurrentPage();
-  }
-}
