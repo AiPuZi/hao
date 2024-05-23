@@ -205,48 +205,49 @@ function renderPagination() {
   const groupIndex = Math.floor(currentPageIndex / pageGroupSize); // 当前页码组索引
   const startPage = groupIndex * pageGroupSize; // 当前页码组的起始页码
   const endPage = Math.min(startPage + pageGroupSize, totalPages); // 当前页码组的结束页码
-
-  for (let i = startPage; i < endPage; i++) {
-    const pageBtn = document.createElement('button');
-    pageBtn.innerText = i + 1;
-    pageBtn.className = currentPageIndex === i ? 'active' : '';
-    pageBtn.onclick = (function(i) {
-      return function() {
-        currentPageIndex = i;
-        if (currentCategory === 'chinese.json') {
-          renderChineseCharacters();
-        } else {
-          renderOtherCharacters();
-        }
-        renderPagination();
-      };
-    })(i);
-    paginationContainer.appendChild(pageBtn);
-  }
+for (let i = startPage; i < endPage; i++) {
+const pageBtn = document.createElement('button');
+pageBtn.innerText = i + 1;
+pageBtn.className = currentPageIndex === i ? 'active' : '';
+pageBtn.onclick = (function(i) {
+return function() {
+currentPageIndex = i;
+// 根据当前分类调用相应的渲染函数
+if (currentCategory === 'chinese.json') {
+renderChineseCharacters();
+} else {
+renderOtherCharacters();
 }
-
-// 上一页和下一页函数
+renderPagination();
+};
+})(i);
+paginationContainer.appendChild(pageBtn);
+}
+}
+// 上一页函数
 function showPrevPage() {
-  if (currentPageIndex > 0) {
-    currentPageIndex--;
-    if (currentCategory === 'chinese.json') {
-      renderChineseCharacters();
-    } else {
-      renderOtherCharacters();
-    }
-    renderPagination();
-  }
+if (currentPageIndex > 0) {
+currentPageIndex--;
+// 根据当前分类调用相应的渲染函数
+if (currentCategory === 'chinese.json') {
+renderChineseCharacters();
+} else {
+renderOtherCharacters();
 }
-
+renderPagination();
+}
+}
+// 下一页函数
 function showNextPage() {
-  const totalPages = Math.ceil(characters.length / pageSize);
-  if (currentPageIndex < totalPages - 1) {
-    currentPageIndex++;
-    if (currentCategory === 'chinese.json') {
-      renderChineseCharacters();
-    } else {
-      renderOtherCharacters();
-    }
-    renderPagination();
-  }
+const totalPages = Math.ceil(characters.length / pageSize);
+if (currentPageIndex < totalPages - 1) {
+currentPageIndex++;
+// 根据当前分类调用相应的渲染函数
+if (currentCategory === 'chinese.json') {
+renderChineseCharacters();
+} else {
+renderOtherCharacters();
+}
+renderPagination();
+}
 }
