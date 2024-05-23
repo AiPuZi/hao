@@ -5,6 +5,7 @@ let currentPageIndex = 0; // 当前页码，初始化为 0
 const pageSize = 30; // 每页显示的汉字数
 const pageGroupSize = 10; // 每组显示的页码数
 let characters = []; // 将从 JSON 文件中动态加载
+let currentCategory = 'chinese.json'; // 当前分类，初始化为 chinese.json
 
 // 页面加载完成后执行
 document.addEventListener('DOMContentLoaded', function() {
@@ -35,14 +36,14 @@ function loadCategoryData(jsonFile) {
   fetch(jsonFile)
     .then(response => response.json())
     .then(data => {
-      characters = data;
-      currentPageIndex = 0;
-      currentCategory = jsonFile; // 此处设置 currentCategory 变量
-      renderPagination();
+      characters = data; // 将加载的数据赋值给 characters 变量
+      currentPageIndex = 0; // 重置当前页码为 0
+      currentCategory = jsonFile; // 更新当前分类
+      renderPagination(); // 渲染分页按钮
       if (jsonFile === 'chinese.json') {
-        renderChineseCharacters();
+        renderChineseCharacters(); // 对于“chinese”分类，使用原有的渲染方法
       } else {
-        renderOtherCharacters();
+        renderOtherCharacters(); // 对于其他分类，使用新的渲染方法
       }
     })
     .catch(error => console.error('Error fetching JSON:', error));
@@ -206,49 +207,51 @@ function renderPagination() {
   const groupIndex = Math.floor(currentPageIndex / pageGroupSize); // 当前页码组索引
   const startPage = groupIndex * pageGroupSize; // 当前页码组的起始页码
   const endPage = Math.min(startPage + pageGroupSize, totalPages); // 当前页码组的结束页码
-for (let i = startPage; i < endPage; i++) {
-const pageBtn = document.createElement('button');
-pageBtn.innerText = i + 1;
-pageBtn.className = currentPageIndex === i ? 'active' : '';
-pageBtn.onclick = (function(i) {
-return function() {
-currentPageIndex = i;
-// 根据当前分类调用相应的渲染函数
-if (currentCategory === 'chinese.json') {
-renderChineseCharacters();
-} else {
-renderOtherCharacters();
+  for (let i = startPage; i < endPage; i++) {
+    const pageBtn = document.createElement('button');
+    pageBtn.innerText = i + 1;
+    pageBtn.className = currentPageIndex === i ? 'active' : '';
+    pageBtn.onclick = (function(i) {
+      return function() {
+        currentPageIndex = i;
+        // 根据当前分类调用相应的渲染函数
+        if (currentCategory === 'chinese.json') {
+          renderChineseCharacters();
+        } else {
+          renderOtherCharacters();
+        }
+        renderPagination();
+      };
+    })(i);
+    paginationContainer.appendChild(pageBtn);
+  }
 }
-renderPagination();
-};
-})(i);
-paginationContainer.appendChild(pageBtn);
-}
-}
+
 // 上一页函数
 function showPrevPage() {
-if (currentPageIndex > 0) {
-currentPageIndex--;
-// 根据当前分类调用相应的渲染函数
-if (currentCategory === 'chinese.json') {
-renderChineseCharacters();
-} else {
-renderOtherCharacters();
+  if (currentPageIndex > 0) {
+    currentPageIndex--;
+    // 根据当前分类调用相应的渲染函数
+    if (currentCategory === 'chinese.json') {
+      renderChineseCharacters();
+    } else {
+      renderOtherCharacters();
+    }
+    renderPagination();
+  }
 }
-renderPagination();
-}
-}
+
 // 下一页函数
 function showNextPage() {
-const totalPages = Math.ceil(characters.length / pageSize);
-if (currentPageIndex < totalPages - 1) {
-currentPageIndex++;
-// 根据当前分类调用相应的渲染函数
-if (currentCategory === 'chinese.json') {
-renderChineseCharacters();
-} else {
-renderOtherCharacters();
-}
-renderPagination();
-}
+  const totalPages = Math.ceil(characters.length / pageSize);
+  if (currentPageIndex < totalPages - 1) {
+    currentPageIndex++;
+    // 根据当前分类调用相应的渲染函数
+    if (currentCategory === 'chinese.json') {
+      renderChineseCharacters();
+    } else {
+      renderOtherCharacters();
+    }
+    renderPagination();
+  }
 }
