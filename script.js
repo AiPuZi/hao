@@ -123,6 +123,7 @@ function renderChineseCharacters() {
 function renderOtherCharacters() {
   const textContainer = document.getElementById('text-container');
   textContainer.innerHTML = ''; // 清空内容
+  textContainer.style.fontFamily = '微软雅黑'; // 设置字体为微软雅黑
 
   const start = currentPageIndex * pageSize; // 计算当前页面的起始索引
   const end = start + pageSize; // 计算当前页面的结束索引
@@ -132,19 +133,34 @@ function renderOtherCharacters() {
     const characterBox = document.createElement('div');
     characterBox.classList.add('character-box');
     characterBox.style.display = 'flex';
-    characterBox.style.justifyContent = 'space-between';
+    characterBox.style.flexDirection = 'column'; // 设置flex方向为列，确保拼音在文字上方
+    characterBox.style.alignItems = 'center'; // 居中对齐
     characterBox.style.padding = '10px';
     characterBox.style.borderBottom = '1px solid #ddd';
 
-    const charText = document.createElement('div');
-    charText.textContent = char;
-    characterBox.appendChild(charText);
-
+    // 创建拼音div并添加到characterBox中
     const pinyinDiv = document.createElement('div');
     pinyinDiv.classList.add('pinyin');
     const charPinyin = pinyin(char, { style: pinyin.STYLE_TONE });
     pinyinDiv.textContent = charPinyin.join(' ');
     characterBox.appendChild(pinyinDiv);
+
+    // 创建文字div并添加到characterBox中
+    const charText = document.createElement('div');
+    charText.textContent = char;
+    characterBox.appendChild(charText);
+
+    // 创建发音按钮并添加到characterBox中
+    const pronounceButton = document.createElement('button');
+    pronounceButton.innerHTML = '<i class="fas fa-volume-up"></i>';
+    pronounceButton.style.marginTop = '5px'; // 设置按钮与文字的间距
+    pronounceButton.addEventListener('click', function() {
+      const msg = new SpeechSynthesisUtterance();
+      msg.text = char;
+      msg.lang = 'zh-CN';
+      window.speechSynthesis.speak(msg);
+    });
+    characterBox.appendChild(pronounceButton);
 
     textContainer.appendChild(characterBox);
   });
