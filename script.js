@@ -44,8 +44,7 @@ function loadCategoryData(jsonFile) {
 }
 
 // 渲染汉字
-// 渲染汉字、词组或句子
-function renderItems() {
+function renderCharacters() {
   const textContainer = document.getElementById('text-container');
   textContainer.innerHTML = ''; // 清空内容
 
@@ -57,55 +56,44 @@ function renderItems() {
     const itemBox = document.createElement('div');
     itemBox.classList.add('item-box');
 
+    // 为每个项目创建拼音
     const pinyinDiv = document.createElement('div');
     pinyinDiv.classList.add('pinyin');
     const itemPinyin = pinyin(item.text, { style: pinyin.STYLE_TONE });
-    pinyinDiv.textContent = itemPinyin.join(' '); // 将拼音数组连接为字符串显示
+    pinyinDiv.textContent = itemPinyin.join(' ');
     itemBox.appendChild(pinyinDiv);
 
+    // 为每个项目创建文本展示区域
     const textDiv = document.createElement('div');
-    textDiv.classList.add(item.type === 'character' ? 'hanzi' : 'phrase-sentence');
     textDiv.textContent = item.text;
     itemBox.appendChild(textDiv);
 
+    // 根据类型添加额外的处理
     if (item.type === 'character') {
-      textDiv.id = 'character-target-div-' + (currentPageIndex * pageSize + index); // 为汉字创建唯一的ID
-    }
+      // 这里处理汉字特有的逻辑
+      textDiv.classList.add('hanzi');
+      itemBox.classList.add('character-box');
+      textDiv.id = 'character-target-div-' + (currentPageIndex * pageSize + index);
 
-    const buttonsDiv = document.createElement('div');
-    buttonsDiv.classList.add('button-container');
+      // 添加动作按钮等特定于汉字的元素
+    } else {
+      // 这里处理词组或句子特有的逻辑
+      textDiv.classList.add('phrase-sentence');
+      itemBox.classList.add('phrase-sentence-box');
+      // 词组或句子可能不需要动画，但可以添加其他特定元素
+    }
 
     // 创建发音按钮
     const pronounceButton = document.createElement('button');
     pronounceButton.innerHTML = '<i class="fas fa-volume-up"></i>';
-    buttonsDiv.appendChild(pronounceButton);
-
     pronounceButton.addEventListener('click', function() {
       const msg = new SpeechSynthesisUtterance();
       msg.text = item.text;
       msg.lang = 'zh-CN';
       window.speechSynthesis.speak(msg);
     });
+    itemBox.appendChild(pronounceButton);
 
-    if (item.type === 'character') {
-      // 仅汉字需要动画按钮
-      const animateButton = document.createElement('button');
-      animateButton.innerHTML = '<i class="fas fa-play"></i>';
-      buttonsDiv.appendChild(animateButton);
-
-      const writer = HanziWriter.create(textDiv.id, item.text, {
-        width: 100,
-        height: 100,
-        padding: 5,
-        showOutline: true // 显示汉字轮廓
-      });
-      
-      animateButton.addEventListener('click', function() {
-        writer.animateCharacter();
-      });
-    }
-    
-    itemBox.appendChild(buttonsDiv);
     textContainer.appendChild(itemBox);
   });
 }
