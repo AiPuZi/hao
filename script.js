@@ -130,7 +130,17 @@ async function renderOtherCharacters() {
   const end = start + pageSize; // 计算当前页面的结束索引
   const pageCharacters = characters.slice(start, end);
 
-  for (const char of pageCharacters) {
+  // 获取俄文和英文翻译
+  let russianTranslations = [];
+  let englishTranslations = [];
+  try {
+    russianTranslations = await getTranslation(pageCharacters, 'zh', 'ru');
+    englishTranslations = await getTranslation(pageCharacters, 'zh', 'en');
+  } catch (error) {
+    console.error('Error fetching translations:', error);
+  }
+
+  pageCharacters.forEach((char, index) => {
     const characterBox = document.createElement('div');
     characterBox.classList.add('character-box');
     characterBox.style.display = 'flex';
@@ -160,43 +170,15 @@ async function renderOtherCharacters() {
     translationsContainer.style.marginTop = '10px';
     characterBox.appendChild(translationsContainer);
 
-    // 异步获取俄文翻译
-    try {
-      const russianTranslation = await getTranslation(char, 'ru');
-      if (russianTranslation) {
-        const russianDiv = document.createElement('div');
-        russianDiv.textContent = `俄文: ${russianTranslation}`;
-        translationsContainer.appendChild(russianDiv);
-      } else {
-        const russianDiv = document.createElement('div');
-        russianDiv.textContent = `俄文翻译未找到`;
-        translationsContainer.appendChild(russianDiv);
-      }
-    } catch (error) {
-      console.error('Error fetching Russian translation:', error);
-      const russianDiv = document.createElement('div');
-      russianDiv.textContent = `俄文翻译失败`;
-      translationsContainer.appendChild(russianDiv);
-    }
+    // 显示俄文翻译
+    const russianDiv = document.createElement('div');
+    russianDiv.textContent = russianTranslations[index] ? `俄文: ${russianTranslations[index]}` : '俄文翻译未找到';
+    translationsContainer.appendChild(russianDiv);
 
-    // 异步获取英文翻译
-    try {
-      const englishTranslation = await getTranslation(char, 'en');
-      if (englishTranslation) {
-        const englishDiv = document.createElement('div');
-        englishDiv.textContent = `英文: ${englishTranslation}`;
-        translationsContainer.appendChild(englishDiv);
-      } else {
-        const englishDiv = document.createElement('div');
-        englishDiv.textContent = `英文翻译未找到`;
-        translationsContainer.appendChild(englishDiv);
-      }
-    } catch (error) {
-      console.error('Error fetching English translation:', error);
-      const englishDiv = document.createElement('div');
-      englishDiv.textContent = `英文翻译失败`;
-      translationsContainer.appendChild(englishDiv);
-    }
+    // 显示英文翻译
+    const englishDiv = document.createElement('div');
+    englishDiv.textContent = englishTranslations[index] ? `英文: ${englishTranslations[index]}` : '英文翻译未找到';
+    translationsContainer.appendChild(englishDiv);
 
     // 创建发音按钮并添加到characterBox中
     const pronounceButton = document.createElement('button');
@@ -221,7 +203,7 @@ async function renderOtherCharacters() {
     characterBox.appendChild(pronounceButton);
 
     textContainer.appendChild(characterBox);
-  }
+  });
 }
 
 // 渲染分页按钮
@@ -300,14 +282,14 @@ function showNextPage() {
 }
 
 // 异步获取俄文翻译
-async function getTranslation(text, sourceLang, targetLang) {
+async function getTranslation(textArray, sourceLang, targetLang) {
   const response = await fetch('https://libretranslate.de/translate', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      q: text,
+      q: textArray.join('\n'), // 将文本数组连接成单个字符串，每个文本之间以换行符分隔
       source: sourceLang,
       target: targetLang,
       format: 'text'
@@ -319,12 +301,5 @@ async function getTranslation(text, sourceLang, targetLang) {
   }
 
   const translationData = await response.json();
-  return translationData.translatedText; // 注意：根据API的响应结构获取翻译文本
+  return translationData.translatedText.split('\n'); // 将翻译后的文本按换行符分割成数组
 }
-
-// 使用示例：将“你好”从中文翻译成俄文
-getTranslation('你好', 'zh', 'ru').then(translatedText => {
-  console.log(translatedText); // 输出翻译结果
-}).catch(error => {
-  console.error(error);
-});
