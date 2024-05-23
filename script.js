@@ -135,7 +135,6 @@ function renderOtherCharacters() {
     characterBox.style.flexDirection = 'column'; // 设置flex方向为列，确保拼音在文字上方
     characterBox.style.alignItems = 'center'; // 居中对齐
     characterBox.style.padding = '10px';
-    characterBox.style.borderBottom = '1px solid #ddd';
     characterBox.style.gap = '10px'; // 增大拼音、文字、按钮之间的间距
 
     // 创建拼音div并添加到characterBox中
@@ -151,7 +150,7 @@ function renderOtherCharacters() {
     charText.textContent = char;
     charText.style.fontSize = '35px'; // 设置文字的字体大小，确保比拼音大
     charText.style.fontWeight = 'bold'; // 设置文字为粗体
-    charText.style.color = '#A9A9A9'; // 设置文字颜色
+    charText.style.color = '#696969'; // 设置文字颜色
     characterBox.appendChild(charText);
 
     // 创建发音按钮并添加到characterBox中
@@ -187,15 +186,13 @@ function renderPagination() {
 
   const totalPages = Math.ceil(characters.length / pageSize); // 计算总页数
 
-  // 获取现有的上一页和下一页按钮
-  const prevPageButton = document.getElementById('prev-page');
-  const nextPageButton = document.getElementById('next-page');
-
   // 设置上一页按钮的属性和事件
+  const prevPageButton = document.getElementById('prev-page');
   prevPageButton.disabled = currentPageIndex === 0;
   prevPageButton.onclick = showPrevPage;
 
   // 设置下一页按钮的属性和事件
+  const nextPageButton = document.getElementById('next-page');
   nextPageButton.disabled = currentPageIndex === totalPages - 1;
   nextPageButton.onclick = showNextPage;
 
@@ -216,7 +213,11 @@ function renderPagination() {
     pageBtn.onclick = (function(i) {
       return function() {
         currentPageIndex = i;
-        renderCharacters();
+        if (currentCategory === 'chinese.json') {
+          renderChineseCharacters();
+        } else {
+          renderOtherCharacters();
+        }
         renderPagination();
       };
     })(i);
@@ -228,7 +229,11 @@ function renderPagination() {
 function showPrevPage() {
   if (currentPageIndex > 0) {
     currentPageIndex--;
-    renderCharacters();
+    if (currentCategory === 'chinese.json') {
+      renderChineseCharacters();
+    } else {
+      renderOtherCharacters();
+    }
     renderPagination();
   }
 }
@@ -237,7 +242,11 @@ function showNextPage() {
   const totalPages = Math.ceil(characters.length / pageSize);
   if (currentPageIndex < totalPages - 1) {
     currentPageIndex++;
-    renderCharacters();
+    if (currentCategory === 'chinese.json') {
+      renderChineseCharacters();
+    } else {
+      renderOtherCharacters();
+    }
     renderPagination();
   }
 }
