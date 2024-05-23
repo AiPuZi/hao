@@ -167,9 +167,16 @@ async function renderOtherCharacters() {
         const russianDiv = document.createElement('div');
         russianDiv.textContent = `俄文: ${russianTranslation}`;
         translationsContainer.appendChild(russianDiv);
+      } else {
+        const russianDiv = document.createElement('div');
+        russianDiv.textContent = `俄文翻译未找到`;
+        translationsContainer.appendChild(russianDiv);
       }
     } catch (error) {
       console.error('Error fetching Russian translation:', error);
+      const russianDiv = document.createElement('div');
+      russianDiv.textContent = `俄文翻译失败`;
+      translationsContainer.appendChild(russianDiv);
     }
 
     // 异步获取英文翻译
@@ -179,9 +186,16 @@ async function renderOtherCharacters() {
         const englishDiv = document.createElement('div');
         englishDiv.textContent = `英文: ${englishTranslation}`;
         translationsContainer.appendChild(englishDiv);
+      } else {
+        const englishDiv = document.createElement('div');
+        englishDiv.textContent = `英文翻译未找到`;
+        translationsContainer.appendChild(englishDiv);
       }
     } catch (error) {
       console.error('Error fetching English translation:', error);
+      const englishDiv = document.createElement('div');
+      englishDiv.textContent = `英文翻译失败`;
+      translationsContainer.appendChild(englishDiv);
     }
 
     // 创建发音按钮并添加到characterBox中
@@ -286,12 +300,31 @@ function showNextPage() {
 }
 
 // 异步获取俄文翻译
-async function getTranslation(char, targetLang) {
-  const response = await fetch(`YOUR_TRANSLATION_API_ENDPOINT?char=${char}&lang=${targetLang}`);
+async function getTranslation(text, sourceLang, targetLang) {
+  const response = await fetch('https://libretranslate.de/translate', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      q: text,
+      source: sourceLang,
+      target: targetLang,
+      format: 'text'
+    })
+  });
+
   if (!response.ok) {
     throw new Error('Failed to fetch translation');
   }
+
   const translationData = await response.json();
-  return translationData.translation;
+  return translationData.translatedText; // 注意：根据API的响应结构获取翻译文本
 }
 
+// 使用示例：将“你好”从中文翻译成俄文
+getTranslation('你好', 'zh', 'ru').then(translatedText => {
+  console.log(translatedText); // 输出翻译结果
+}).catch(error => {
+  console.error(error);
+});
