@@ -123,7 +123,6 @@ function renderChineseCharacters() {
 function renderOtherCharacters() {
   const textContainer = document.getElementById('text-container');
   textContainer.innerHTML = ''; // 清空内容
-  textContainer.style.fontFamily = '微软雅黑'; // 设置字体为微软雅黑
 
   const start = currentPageIndex * pageSize; // 计算当前页面的起始索引
   const end = start + pageSize; // 计算当前页面的结束索引
@@ -142,7 +141,7 @@ function renderOtherCharacters() {
     // 创建拼音div并添加到characterBox中
     const pinyinDiv = document.createElement('div');
     pinyinDiv.classList.add('pinyin');
-    pinyinDiv.style.fontSize = '13px'; // 设置拼音的字体大小
+    pinyinDiv.style.fontSize = '15px'; // 设置拼音的字体大小
     const charPinyin = pinyin(char, { style: pinyin.STYLE_TONE });
     pinyinDiv.textContent = charPinyin.join(' ');
     characterBox.appendChild(pinyinDiv);
@@ -150,7 +149,7 @@ function renderOtherCharacters() {
     // 创建文字div并添加到characterBox中
     const charText = document.createElement('div');
     charText.textContent = char;
-    charText.style.fontSize = '20px'; // 设置文字的字体大小，确保比拼音大
+    charText.style.fontSize = '25px'; // 设置文字的字体大小，确保比拼音大
     charText.style.fontWeight = 'bold'; // 设置文字为粗体
     characterBox.appendChild(charText);
 
@@ -158,6 +157,16 @@ function renderOtherCharacters() {
     const pronounceButton = document.createElement('button');
     pronounceButton.innerHTML = '<i class="fas fa-volume-up"></i>';
     pronounceButton.style.marginTop = '10px'; // 增大按钮与文字的间距
+    // 应用CSS样式
+    pronounceButton.style.backgroundColor = '#e0e0e0'; // 灰色背景
+    pronounceButton.style.border = 'none';
+    pronounceButton.style.borderRadius = '50%'; // 圆形按钮
+    pronounceButton.style.width = '36px';
+    pronounceButton.style.height = '36px';
+    pronounceButton.style.display = 'flex';
+    pronounceButton.style.justifyContent = 'center';
+    pronounceButton.style.alignItems = 'center';
+    pronounceButton.style.cursor = 'pointer';
     pronounceButton.addEventListener('click', function() {
       const msg = new SpeechSynthesisUtterance();
       msg.text = char;
