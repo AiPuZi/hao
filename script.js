@@ -44,7 +44,8 @@ function loadCategoryData(jsonFile) {
 }
 
 // 渲染汉字
-function renderCharacters() {
+// 渲染汉字、词组或句子
+function renderItems() {
   const textContainer = document.getElementById('text-container');
   textContainer.innerHTML = ''; // 清空内容
 
@@ -54,7 +55,7 @@ function renderCharacters() {
 
   pageItems.forEach(function(item, index) {
     const itemBox = document.createElement('div');
-    itemBox.classList.add('character-box');
+    itemBox.classList.add('item-box');
 
     const pinyinDiv = document.createElement('div');
     pinyinDiv.classList.add('pinyin');
@@ -67,6 +68,10 @@ function renderCharacters() {
     textDiv.textContent = item.text;
     itemBox.appendChild(textDiv);
 
+    if (item.type === 'character') {
+      textDiv.id = 'character-target-div-' + (currentPageIndex * pageSize + index); // 为汉字创建唯一的ID
+    }
+
     const buttonsDiv = document.createElement('div');
     buttonsDiv.classList.add('button-container');
 
@@ -75,7 +80,6 @@ function renderCharacters() {
     pronounceButton.innerHTML = '<i class="fas fa-volume-up"></i>';
     buttonsDiv.appendChild(pronounceButton);
 
-    // 为发音按钮添加点击事件
     pronounceButton.addEventListener('click', function() {
       const msg = new SpeechSynthesisUtterance();
       msg.text = item.text;
@@ -83,29 +87,24 @@ function renderCharacters() {
       window.speechSynthesis.speak(msg);
     });
 
-    // 如果类型是汉字，则添加动画按钮
     if (item.type === 'character') {
-      itemBox.style.flexBasis = 'calc(33.333% - 10px)'; // 汉字，一行三个格子
-
+      // 仅汉字需要动画按钮
       const animateButton = document.createElement('button');
       animateButton.innerHTML = '<i class="fas fa-play"></i>';
       buttonsDiv.appendChild(animateButton);
-      
-      textDiv.id = 'character-target-div-' + (currentPageIndex * pageSize + index); 
+
       const writer = HanziWriter.create(textDiv.id, item.text, {
         width: 100,
         height: 100,
         padding: 5,
         showOutline: true // 显示汉字轮廓
       });
-
+      
       animateButton.addEventListener('click', function() {
         writer.animateCharacter();
       });
-    } else {
-      itemBox.style.flexBasis = 'calc(50% - 10px)'; // 词组或句子，一行两个格子
     }
-
+    
     itemBox.appendChild(buttonsDiv);
     textContainer.appendChild(itemBox);
   });
