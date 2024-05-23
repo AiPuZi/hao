@@ -8,7 +8,7 @@ let characters = []; // 将从 JSON 文件中动态加载
 
 // 页面加载完成后执行
 document.addEventListener('DOMContentLoaded', function() {
-  // 初始加载第一页汉字
+  // 初始加载第一页数据
   loadCategoryData('chinese.json');
 
   // 绑定导航链接的点击事件
@@ -38,63 +38,115 @@ function loadCategoryData(jsonFile) {
       characters = data; // 将加载的数据赋值给 characters 变量
       currentPageIndex = 0; // 重置当前页码为 0
       renderPagination(); // 渲染分页按钮
-      renderCharacters(); // 加载第一页的内容
+      if (jsonFile === 'chinese.json') {
+        renderChineseCharacters(); // 对于“chinese”分类，使用原有的渲染方法
+      } else {
+        renderOtherCharacters(); // 对于其他分类，使用新的渲染方法
+      }
     })
     .catch(error => console.error('Error fetching JSON:', error));
 }
 
-// 渲染汉字
-function renderCharacters() {
+// 渲染“chinese”分类的汉字（原有的渲染方法）
+function renderChineseCharacters() {
+  const textContainer = document.getElementById('text-container');
+  textContainer.innerHTML = ''; // 清空内容
+
+  const start = currentPageIndex * pageSize; // 计算当前页面的起始汉字索引
+  const end = start + pageSize; // 计算当前页面的结束汉字索引
+  const pageCharacters = characters.slice(start, end); 
+  
+  pageCharacters.forEach(function(char, index) {
+    const characterBox = document.createElement('div');
+    characterBox.classList.add('character-box');
+    
+    const pinyinDiv = document.createElement('div');
+    pinyinDiv.classList.add('pinyin');
+    const charPinyin = pinyin(char, { style: pinyin.STYLE_TONE });
+    pinyinDiv.textContent = charPinyin.join(' '); // 将拼音数组连接为字符串显示
+    characterBox.appendChild(pinyinDiv);
+
+    const characterTargetDiv = document.createElement('div');
+    characterTargetDiv.classList.add('hanzi');
+    characterTargetDiv.id = 'character-target-div-' + (currentPageIndex * pageSize + index); // 为每个汉字创建唯一的ID
+    characterBox.appendChild(characterTargetDiv);
+
+    const buttonsDiv = document.createElement('div');
+    buttonsDiv.classList.add('button-container');
+
+    // 创建播放动画按钮
+    const animateButton = document.createElement('button');
+    animateButton.innerHTML = '<i class="fas fa-play"></i>';
+    buttonsDiv.appendChild(animateButton);
+
+    // 创建发音按钮
+    const pronounceButton = document.createElement('button');
+    pronounceButton.innerHTML = '<i class="fas fa-volume-up"></i>';
+    buttonsDiv.appendChild(pronounceButton);
+
+    characterBox.appendChild(buttonsDiv);
+    textContainer.appendChild(characterBox);
+
+    // 创建汉字写作实例
+    const writer = HanziWriter.create(characterTargetDiv.id, char, {
+        width: 100,
+        height: 100,
+        padding: 5,
+        showOutline: true // 显示汉字轮廓
+    });
+
+    // 为播放动画按钮添加点击事件，并在此处使用writer实例
+    animateButton.addEventListener('click', function() {
+        writer.animateCharacter();
+    });
+
+    // 为发音按钮添加点击事件
+    pronounceButton.addEventListener('click', function() {
+        // 创建一个SpeechSynthesisUtterance的实例
+        const msg = new SpeechSynthesisUtterance();
+        
+        // 设置要朗读的文本为当前汉字
+        msg.text = char;
+        
+        // 设置语言为中文普通话
+        msg.lang = 'zh-CN';
+        
+        // 使用SpeechSynthesis接口的speak方法来播放语音
+        window.speechSynthesis.speak(msg);
+        
+        console.log('播放汉字“' + char + '”的发音');
+    });
+  });
+}
+
+// 渲染除“chinese”以外的其他分类（新的渲染方法）
+function renderOtherCharacters() {
   const textContainer = document.getElementById('text-container');
   textContainer.innerHTML = ''; // 清空内容
 
   const start = currentPageIndex * pageSize; // 计算当前页面的起始索引
   const end = start + pageSize; // 计算当前页面的结束索引
-  const pageItems = characters.slice(start, end);
+  const pageCharacters = characters.slice(start, end);
 
-  pageItems.forEach(function(item, index) {
-    const itemBox = document.createElement('div');
-    itemBox.classList.add('item-box');
+  pageCharacters.forEach(function(char, index) {
+    const characterBox = document.createElement('div');
+    characterBox.classList.add('character-box');
+    characterBox.style.display = 'flex';
+    characterBox.style.justifyContent = 'space-between';
+    characterBox.style.padding = '10px';
+    characterBox.style.borderBottom = '1px solid #ddd';
 
-    // 为每个项目创建拼音
+    const charText = document.createElement('div');
+    charText.textContent = char;
+    characterBox.appendChild(charText);
+
     const pinyinDiv = document.createElement('div');
     pinyinDiv.classList.add('pinyin');
-    const itemPinyin = pinyin(item.text, { style: pinyin.STYLE_TONE });
-    pinyinDiv.textContent = itemPinyin.join(' ');
-    itemBox.appendChild(pinyinDiv);
+    const charPinyin = pinyin(char, { style: pinyin.STYLE_TONE });
+    pinyinDiv.textContent = charPinyin.join(' ');
+    characterBox.appendChild(pinyinDiv);
 
-    // 为每个项目创建文本展示区域
-    const textDiv = document.createElement('div');
-    textDiv.textContent = item.text;
-    itemBox.appendChild(textDiv);
-
-    // 根据类型添加额外的处理
-    if (item.type === 'character') {
-      // 这里处理汉字特有的逻辑
-      textDiv.classList.add('hanzi');
-      itemBox.classList.add('character-box');
-      textDiv.id = 'character-target-div-' + (currentPageIndex * pageSize + index);
-
-      // 添加动作按钮等特定于汉字的元素
-    } else {
-      // 这里处理词组或句子特有的逻辑
-      textDiv.classList.add('phrase-sentence');
-      itemBox.classList.add('phrase-sentence-box');
-      // 词组或句子可能不需要动画，但可以添加其他特定元素
-    }
-
-    // 创建发音按钮
-    const pronounceButton = document.createElement('button');
-    pronounceButton.innerHTML = '<i class="fas fa-volume-up"></i>';
-    pronounceButton.addEventListener('click', function() {
-      const msg = new SpeechSynthesisUtterance();
-      msg.text = item.text;
-      msg.lang = 'zh-CN';
-      window.speechSynthesis.speak(msg);
-    });
-    itemBox.appendChild(pronounceButton);
-
-    textContainer.appendChild(itemBox);
+    textContainer.appendChild(characterBox);
   });
 }
 
