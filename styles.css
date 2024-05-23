@@ -29,6 +29,9 @@ body {
     font-weight: bold;
     color: #fff;
     text-decoration: none;
+    display: inline-block; /* 或者 display: block; */
+    line-height: 1.2; /* 确保行高与字体大小相配合 */
+    cursor: pointer; /* 确保鼠标悬停时显示手形指针 */
 }
 
 .navigation {
