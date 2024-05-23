@@ -137,10 +137,12 @@ function renderOtherCharacters() {
     characterBox.style.alignItems = 'center'; // 居中对齐
     characterBox.style.padding = '10px';
     characterBox.style.borderBottom = '1px solid #ddd';
+    characterBox.style.gap = '10px'; // 增大拼音、文字、按钮之间的间距
 
     // 创建拼音div并添加到characterBox中
     const pinyinDiv = document.createElement('div');
     pinyinDiv.classList.add('pinyin');
+    pinyinDiv.style.fontSize = '13px'; // 设置拼音的字体大小
     const charPinyin = pinyin(char, { style: pinyin.STYLE_TONE });
     pinyinDiv.textContent = charPinyin.join(' ');
     characterBox.appendChild(pinyinDiv);
@@ -148,12 +150,14 @@ function renderOtherCharacters() {
     // 创建文字div并添加到characterBox中
     const charText = document.createElement('div');
     charText.textContent = char;
+    charText.style.fontSize = '20px'; // 设置文字的字体大小，确保比拼音大
+    charText.style.fontWeight = 'bold'; // 设置文字为粗体
     characterBox.appendChild(charText);
 
     // 创建发音按钮并添加到characterBox中
     const pronounceButton = document.createElement('button');
     pronounceButton.innerHTML = '<i class="fas fa-volume-up"></i>';
-    pronounceButton.style.marginTop = '5px'; // 设置按钮与文字的间距
+    pronounceButton.style.marginTop = '10px'; // 增大按钮与文字的间距
     pronounceButton.addEventListener('click', function() {
       const msg = new SpeechSynthesisUtterance();
       msg.text = char;
