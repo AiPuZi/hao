@@ -56,15 +56,6 @@ function renderCharacters() {
     const itemBox = document.createElement('div');
     itemBox.classList.add('character-box');
 
-    // 根据内容类型设置不同的布局
-    if (item.type === 'character') {
-      // 汉字，一行三个格子
-      itemBox.style.flexBasis = 'calc(33.333% - 10px)';
-    } else {
-      // 词组或句子，一行两个格子
-      itemBox.style.flexBasis = 'calc(50% - 10px)';
-    }
-
     const pinyinDiv = document.createElement('div');
     pinyinDiv.classList.add('pinyin');
     const itemPinyin = pinyin(item.text, { style: pinyin.STYLE_TONE });
@@ -86,43 +77,33 @@ function renderCharacters() {
 
     // 为发音按钮添加点击事件
     pronounceButton.addEventListener('click', function() {
-        // 创建一个SpeechSynthesisUtterance的实例
-        const msg = new SpeechSynthesisUtterance();
-
-        // 设置要朗读的文本为当前汉字
-        msg.text = item.text;
-
-        // 设置语言为中文普通话
-        msg.lang = 'zh-CN';
-
-        // 使用SpeechSynthesis接口的speak方法来播放语音
-        window.speechSynthesis.speak(msg);
-
-        console.log('播放“' + item.text + '”的发音');
+      const msg = new SpeechSynthesisUtterance();
+      msg.text = item.text;
+      msg.lang = 'zh-CN';
+      window.speechSynthesis.speak(msg);
     });
 
     // 如果类型是汉字，则添加动画按钮
     if (item.type === 'character') {
-      // 创建播放动画按钮
+      itemBox.style.flexBasis = 'calc(33.333% - 10px)'; // 汉字，一行三个格子
+
       const animateButton = document.createElement('button');
       animateButton.innerHTML = '<i class="fas fa-play"></i>';
       buttonsDiv.appendChild(animateButton);
       
-      // 为汉字创建唯一的ID
       textDiv.id = 'character-target-div-' + (currentPageIndex * pageSize + index); 
-
-      // 创建汉字写作实例
       const writer = HanziWriter.create(textDiv.id, item.text, {
-          width: 100,
-          height: 100,
-          padding: 5,
-          showOutline: true // 显示汉字轮廓
+        width: 100,
+        height: 100,
+        padding: 5,
+        showOutline: true // 显示汉字轮廓
       });
 
-      // 为播放动画按钮添加点击事件
       animateButton.addEventListener('click', function() {
-          writer.animateCharacter();
+        writer.animateCharacter();
       });
+    } else {
+      itemBox.style.flexBasis = 'calc(50% - 10px)'; // 词组或句子，一行两个格子
     }
 
     itemBox.appendChild(buttonsDiv);
