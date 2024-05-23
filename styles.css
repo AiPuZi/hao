@@ -26,7 +26,7 @@ body {
 
 .logo {
     font-size: 25px;
-    line-height: 26px; /* 或稍大一点的值 */
+    line-height: 30px; /* 或稍大一点的值 */
     font-weight: bold;
     color: #fff;
     text-decoration: none;
