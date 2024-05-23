@@ -35,13 +35,14 @@ function loadCategoryData(jsonFile) {
   fetch(jsonFile)
     .then(response => response.json())
     .then(data => {
-      characters = data; // 将加载的数据赋值给 characters 变量
-      currentPageIndex = 0; // 重置当前页码为 0
-      renderPagination(); // 渲染分页按钮
+      characters = data;
+      currentPageIndex = 0;
+      currentCategory = jsonFile; // 此处设置 currentCategory 变量
+      renderPagination();
       if (jsonFile === 'chinese.json') {
-        renderChineseCharacters(); // 对于“chinese”分类，使用原有的渲染方法
+        renderChineseCharacters();
       } else {
-        renderOtherCharacters(); // 对于其他分类，使用新的渲染方法
+        renderOtherCharacters();
       }
     })
     .catch(error => console.error('Error fetching JSON:', error));
