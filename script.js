@@ -12,21 +12,22 @@ document.addEventListener('DOMContentLoaded', function() {
   loadCategoryData('chinese.json');
 
   // 绑定导航链接的点击事件
-const navLinks = document.querySelectorAll('.navigation a');
-navLinks.forEach(function(navLink) {
-  navLink.addEventListener('click', function(event) {
-    const href = navLink.getAttribute('href');
-    
-    // 检查链接是否为内部锚点
-    if (href.startsWith('#')) {
-      event.preventDefault(); // 防止默认行为，防止出现锚点
-      const category = href.substring(1); // 提取链接的锚点部分作为类别
-      loadCategoryData(category); // 加载对应分类的数据
-    }
-    // 如果链接是指向HTML文件或其他外部资源，保留默认跳转行为
-    // 不需要额外的代码，因为不满足 if 条件时，会自动执行默认行为
+document.addEventListener('DOMContentLoaded', function() {
+  const navLinks = document.querySelectorAll('.navigation a');
+  navLinks.forEach(function(navLink) {
+    navLink.addEventListener('click', function(event) {
+      const href = this.getAttribute('href');
+      
+      // 检查链接是否为内部锚点
+      if (href.startsWith('#')) {
+        event.preventDefault(); // 防止默认行为，防止锚点出现在URL中
+        const category = href.substring(1); // 提取链接的锚点部分作为类别
+        history.pushState({}, '', location.pathname); // 更新URL但不包含锚点
+        loadCategoryData(category); // 加载对应分类的数据
+      }
+      // 链接不是锚点，执行默认的页面跳转行为
+    });
   });
-});
 });
 
 // 加载分类数据
