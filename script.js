@@ -122,7 +122,7 @@ function renderChineseCharacters() {
 }
 
 // 渲染除“chinese”以外的其他分类（新的渲染方法）
-function renderOtherCharacters() {
+async function renderOtherCharacters() {
   const textContainer = document.getElementById('text-container');
   textContainer.innerHTML = ''; // 清空内容
 
@@ -130,7 +130,7 @@ function renderOtherCharacters() {
   const end = start + pageSize; // 计算当前页面的结束索引
   const pageCharacters = characters.slice(start, end);
 
-  pageCharacters.forEach(function(char, index) {
+  for (const char of pageCharacters) {
     const characterBox = document.createElement('div');
     characterBox.classList.add('character-box');
     characterBox.style.display = 'flex';
@@ -155,31 +155,81 @@ function renderOtherCharacters() {
     charText.style.color = '#696969'; // 设置文字颜色
     characterBox.appendChild(charText);
 
-    // 创建发音按钮并添加到characterBox中
-    const pronounceButton = document.createElement('button');
-    pronounceButton.innerHTML = '<i class="fas fa-volume-up"></i>';
-    pronounceButton.style.marginTop = '10px'; // 增大按钮与文字的间距
-    // 应用CSS样式
-    pronounceButton.style.backgroundColor = '#e0e0e0'; // 灰色背景
-    pronounceButton.style.border = 'none';
-    pronounceButton.style.borderRadius = '50%'; // 圆形按钮
-    pronounceButton.style.width = '36px';
-    pronounceButton.style.height = '36px';
-    pronounceButton.style.display = 'flex';
-    pronounceButton.style.justifyContent = 'center';
-    pronounceButton.style.alignItems = 'center';
-    pronounceButton.style.cursor = 'pointer';
-    pronounceButton.addEventListener('click', function() {
-      const msg = new SpeechSynthesisUtterance();
-      msg.text = char;
-      msg.lang = 'zh-CN';
-      window.speechSynthesis.speak(msg);
-    });
-    characterBox.appendChild(pronounceButton);
+    // 添加俄文和英文翻译的容器
+    const translationsContainer = document.createElement('div');
+    translationsContainer.style.marginTop = '10px';
+    characterBox.appendChild(translationsContainer);
 
-    textContainer.appendChild(characterBox);
-  });
+    // 异步获取俄文翻译
+    try {
+      const russianTranslation = await getTranslation(char, 'ru');
+      if (russianTranslation) {
+        const russianDiv = document.createElement('div');
+        russianDiv.textContent = `俄文: ${russianTranslation}`;
+        translationsContainer.appendChild(russianDiv);
+      }
+    } catch (error) {
+      console.error('Error fetching Russian translation:', error);
+    }
+
+    // 异步获取英文翻译
+    try {
+      const englishTranslation = await getTranslation(char, 'en');
+      if (englishTranslation) {
+        const englishDiv = document.createElement('div');
+        englishDiv.textContent = `英文: ${englishTranslation}`;
+        translationsContainer.appendChild(englishDiv);
+        }
+        } catch (error) {
+        console.error('Error fetching English translation:', error);
+        }
+
+        // 创建发音按钮并添加到characterBox中
+const pronounceButton = document.createElement('button');
+pronounceButton.innerHTML = '<i class="fas fa-volume-up"></i>';
+pronounceButton.style.marginTop = '10px'; // 增大按钮与文字的间距
+// 应用CSS样式
+pronounceButton.style.backgroundColor = '#e0e0e0'; // 灰色背景
+pronounceButton.style.border = 'none';
+pronounceButton.style.borderRadius = '50%'; // 圆形按钮
+pronounceButton.style.width = '36px';
+pronounceButton.style.height = '36px';
+pronounceButton.style.display = 'flex';
+pronounceButton.style.justifyContent = 'center';
+pronounceButton.style.alignItems = 'center';
+pronounceButton.style.cursor = 'pointer';
+pronounceButton.addEventListener('click', function() {
+  const msg = new SpeechSynthesisUtterance();
+  msg.text = char;
+  msg.lang = 'zh-CN';
+  window.speechSynthesis.speak(msg);
+});
+characterBox.appendChild(pronounceButton);
+
+textContainer.appendChild(characterBox);
 }
+}
+
+// 辅助函数：使用 LibreTranslate 获取翻译
+async function getTranslation(text, targetLang) {
+  try {
+  const response = await fetch('https://libretranslate.de/translate', {
+  method: 'POST',
+  headers: {
+  'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+  q: text,
+  target: targetLang,
+  }),
+  });
+  const data = await response.json();
+  return data.translatedText;
+  } catch (error) {
+  console.error('Error fetching translation:', error);
+  return null;
+  }
+  }
 
 // 渲染分页按钮
 function renderPagination() {
