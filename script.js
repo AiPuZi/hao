@@ -284,3 +284,14 @@ function showNextPage() {
     renderPagination();
   }
 }
+
+// 异步获取俄文翻译
+async function getTranslation(char, targetLang) {
+  const response = await fetch(`YOUR_TRANSLATION_API_ENDPOINT?char=${char}&lang=${targetLang}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch translation');
+  }
+  const translationData = await response.json();
+  return translationData.translation;
+}
+
