@@ -141,7 +141,7 @@ function renderOtherCharacters() {
     // 创建拼音div并添加到characterBox中
     const pinyinDiv = document.createElement('div');
     pinyinDiv.classList.add('pinyin');
-    pinyinDiv.style.fontSize = '18px'; // 设置拼音的字体大小
+    pinyinDiv.style.fontSize = '15px'; // 设置拼音的字体大小
     const charPinyin = pinyin(char, { style: pinyin.STYLE_TONE });
     pinyinDiv.textContent = charPinyin.join(' ');
     characterBox.appendChild(pinyinDiv);
@@ -151,7 +151,7 @@ function renderOtherCharacters() {
     charText.textContent = char;
     charText.style.fontSize = '30px'; // 设置文字的字体大小，确保比拼音大
     charText.style.fontWeight = 'bold'; // 设置文字为粗体
-    charText.style.color = '#808080'; // 设置文字颜色
+    charText.style.color = '#666b6c'; // 设置文字颜色
     characterBox.appendChild(charText);
 
     // 创建发音按钮并添加到characterBox中
