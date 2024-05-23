@@ -26,7 +26,7 @@ body {
 
 .logo {
     font-size: 25px;
-    line-height: 30px; /* 或稍大一点的值 */
+    z-index: 1001; /* 确保.logo在.navigation之上 */
     font-weight: bold;
     color: #fff;
     text-decoration: none;
