@@ -25,14 +25,11 @@ body {
 }
 
 .logo {
-    font-size: 1em;
+    display: inline-block;
+    font-size: 25px;
     font-weight: bold;
-    position: absolute; /* 保持绝对定位 */
-    left: 20px; /* 距离左边界的距离 */
-    top: 50%;
-    transform: translateY(-50%); /* 垂直居中 LOGO */
-    text-decoration: none; 
     color: #fff;
+    text-decoration: none;
 }
 
 .navigation {
