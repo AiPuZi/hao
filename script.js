@@ -12,18 +12,18 @@ document.addEventListener('DOMContentLoaded', function() {
   loadCategoryData('chinese.json');
 
   // 绑定导航链接的点击事件
-const navLinks = document.querySelectorAll('.navigation a');
-navLinks.forEach(function(navLink) {
-  navLink.addEventListener('click', function(event) {
-    const href = navLink.getAttribute('href');
-    
-    // 检查链接是否为内部锚点
-    if (href.startsWith('#')) {
+  const navLinks = document.querySelectorAll('.navigation a');
+  navLinks.forEach(function(navLink) {
+    navLink.addEventListener('click', function(event) {
       event.preventDefault(); // 防止默认行为
-      const category = href.substring(1); // 提取链接的锚点部分作为类别
-      loadCategoryData(category + '.json');
-    }
-    // 不是锚点链接，让浏览器执行正常的页面跳转
+      const href = navLink.getAttribute('href');
+      
+      // 检查链接是否为内部锚点
+      if (href.startsWith('#')) {
+        const category = href.substring(1); // 提取链接的锚点部分作为类别
+        loadCategoryData(category + '.json');
+      }
+    });
   });
 });
 
