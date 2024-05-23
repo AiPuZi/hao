@@ -33,46 +33,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // 加载分类数据
 function loadCategoryData(jsonFile) {
-  showLoadingIndicator();
   fetch(jsonFile)
     .then(response => response.json())
     .then(data => {
-      hideLoadingIndicator();
       characters = data; // 将加载的数据赋值给 characters 变量
       currentPageIndex = 0; // 重置当前页码为 0
       currentCategory = jsonFile; // 更新当前分类
       renderPagination(); // 渲染分页按钮
-      renderCurrentPage(); // 渲染当前页面内容
+      if (jsonFile === 'chinese.json') {
+        renderChineseCharacters(); // 对于“chinese”分类，使用原有的渲染方法
+      } else {
+        renderOtherCharacters(); // 对于其他分类，使用新的渲染方法
+      }
     })
-    .catch(error => {
-      console.error('Error fetching JSON:', error);
-      hideLoadingIndicator();
-    });
-}
-
-// 显示加载指示器
-function showLoadingIndicator() {
-  const loadingIndicator = document.getElementById('loading-indicator');
-  if (loadingIndicator) {
-    loadingIndicator.style.display = 'block';
-  }
-}
-
-// 隐藏加载指示器
-function hideLoadingIndicator() {
-  const loadingIndicator = document.getElementById('loading-indicator');
-  if (loadingIndicator) {
-    loadingIndicator.style.display = 'none';
-  }
-}
-
-// 渲染当前页面内容
-function renderCurrentPage() {
-  if (currentCategory === 'chinese.json') {
-    renderChineseCharacters();
-  } else {
-    renderOtherCharacters();
-  }
+    .catch(error => console.error('Error fetching JSON:', error));
 }
 
 // 渲染“chinese”分类的汉字（原有的渲染方法）
@@ -81,7 +55,7 @@ function renderChineseCharacters() {
   textContainer.innerHTML = ''; // 清空内容
 
   const start = currentPageIndex * pageSize; // 计算当前页面的起始汉字索引
-  const end = Math.min(start + pageSize, characters.length); // 计算当前页面的结束汉字索引
+  const end = start + pageSize; // 计算当前页面的结束汉字索引
   const pageCharacters = characters.slice(start, end); 
   
   pageCharacters.forEach(function(char, index) {
@@ -153,7 +127,7 @@ function renderOtherCharacters() {
   textContainer.innerHTML = ''; // 清空内容
 
   const start = currentPageIndex * pageSize; // 计算当前页面的起始索引
-  const end = Math.min(start + pageSize, characters.length); // 计算当前页面的结束索引
+  const end = start + pageSize; // 计算当前页面的结束索引
   const pageCharacters = characters.slice(start, end);
 
   pageCharacters.forEach(function(char, index) {
@@ -214,41 +188,70 @@ function renderPagination() {
 
   const totalPages = Math.ceil(characters.length / pageSize); // 计算总页数
 
-  if (totalPages > 1) { // 只有在总页数大于1时才显示分页按钮
-    // 计算页码组的起始页码和结束页码
-    const startPage = Math.floor(currentPageIndex / pageGroupSize) * pageGroupSize;
-    const endPage = Math.min(startPage + pageGroupSize, totalPages);
+  // 设置上一页按钮的属性和事件
+  const prevPageButton = document.getElementById('prev-page');
+  prevPageButton.disabled = currentPageIndex === 0;
+  prevPageButton.onclick = showPrevPage;
 
-    // 创建上一页按钮
-    const prevPageButton = document.createElement('button');
-    prevPageButton.textContent = '上一页';
-    prevPageButton.disabled = currentPageIndex === 0; // 在第一页时禁用按钮
-    prevPageButton.addEventListener('click', showPrevPage);
-    paginationContainer.appendChild(prevPageButton);
+  // 设置下一页按钮的属性和事件
+  const nextPageButton = document.getElementById('next-page');
+  nextPageButton.disabled = currentPageIndex === totalPages - 1;
+  nextPageButton.onclick = showNextPage;
 
-    // 创建页码按钮
-    for (let i = startPage; i < endPage; i++) {
-      const pageButton = document.createElement('button');
-      pageButton.textContent = i + 1;
-      pageButton.classList.add('page-button');
-      if (i === currentPageIndex) {
-        pageButton.classList.add('active'); // 高亮当前页码
-      }
-      pageButton.addEventListener('click', function() {
+  // 如果总页数小于等于1，直接返回，不再渲染页码按钮
+  if (totalPages <= 1) {
+    return;
+  }
+
+  // 添加页码按钮
+  const groupIndex = Math.floor(currentPageIndex / pageGroupSize); // 当前页码组索引
+  const startPage = groupIndex * pageGroupSize; // 当前页码组的起始页码
+  const endPage = Math.min(startPage + pageGroupSize, totalPages); // 当前页码组的结束页码
+  for (let i = startPage; i < endPage; i++) {
+    const pageBtn = document.createElement('button');
+    pageBtn.innerText = i + 1;
+    pageBtn.className = currentPageIndex === i ? 'active' : '';
+    pageBtn.onclick = (function(i) {
+      return function() {
         currentPageIndex = i;
+        // 根据当前分类调用相应的渲染函数
+        if (currentCategory === 'chinese.json') {
+          renderChineseCharacters();
+        } else {
+          renderOtherCharacters();
+        }
         renderPagination();
-        renderCurrentPage();
-      });
-      paginationContainer.appendChild(pageButton);
-    }
-
-    // 创建下一页按钮
-    const nextPageButton = document.createElement('button');
-    nextPageButton.textContent = '下一页';
-    nextPageButton.disabled = currentPageIndex === totalPages - 1; // 在最后一页时禁用按钮
-    nextPageButton.addEventListener('click', showNextPage);
-    paginationContainer.appendChild(nextPageButton);
+      };
+    })(i);
+    paginationContainer.appendChild(pageBtn);
   }
 }
 
+// 上一页函数
+function showPrevPage() {
+  if (currentPageIndex > 0) {
+    currentPageIndex--;
+    // 根据当前分类调用相应的渲染函数
+    if (currentCategory === 'chinese.json') {
+      renderChineseCharacters();
+    } else {
+      renderOtherCharacters();
+    }
+    renderPagination();
+  }
+}
 
+// 下一页函数
+function showNextPage() {
+  const totalPages = Math.ceil(characters.length / pageSize);
+  if (currentPageIndex < totalPages - 1) {
+    currentPageIndex++;
+    // 根据当前分类调用相应的渲染函数
+    if (currentCategory === 'chinese.json') {
+      renderChineseCharacters();
+    } else {
+      renderOtherCharacters();
+    }
+    renderPagination();
+  }
+}
