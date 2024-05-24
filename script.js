@@ -283,31 +283,17 @@ function showNextPage() {
 
 // 异步获取俄文翻译
 async function getTranslation(textArray, sourceLang, targetLang) {
-  const apiKey = process.env.DEEPL_API_KEY; // 从环境变量中获取API密钥
-  const encodedText = encodeURIComponent(textArray.join('\n')); // 对文本进行URL编码
-  const url = `https://api-free.deepl.com/v2/translate`;
-  const headers = {
-    'Authorization': `DeepL-Auth-Key ${apiKey}`
-  };
-  const body = new URLSearchParams({
-    'text': encodedText,
-    'source_lang': sourceLang,
-    'target_lang': targetLang
-  });
+  const apiUrl = 'https://hao-peach.vercel.app/translate?text=' + encodeURIComponent(textArray.join('\n')) + '&source_lang=' + sourceLang + '&target_lang=' + targetLang;
 
   try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: headers,
-      body: body
-    });
+    const response = await fetch(apiUrl);
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const translationData = await response.json();
-    return translationData.translations.map(trans => trans.text);
+    return translationData;
   } catch (error) {
     console.error('Error fetching translation:', error);
     return [];
