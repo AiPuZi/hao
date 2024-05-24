@@ -178,12 +178,12 @@ async function renderOtherCharacters() {
 
       // 显示俄文翻译
       const russianDiv = document.createElement('div');
-      russianDiv.textContent = `俄文: ${russianTranslations[index] || '俄文翻译未找到'}`;
+      russianDiv.textContent = russianTranslations[index] ? `俄文: ${russianTranslations[index]}` : '俄文翻译未找到';
       translationsContainer.appendChild(russianDiv);
 
       // 显示英文翻译
       const englishDiv = document.createElement('div');
-      englishDiv.textContent = `英文: ${englishTranslations[index] || '英文翻译未找到'}`;
+      englishDiv.textContent = englishTranslations[index] ? `英文: ${englishTranslations[index]}` : '英文翻译未找到';
       translationsContainer.appendChild(englishDiv);
 
       // 创建发音按钮并添加到characterBox中
