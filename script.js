@@ -135,6 +135,11 @@ async function renderOtherCharacters() {
     const russianTranslations = await getTranslation(pageCharacters, 'zh', 'ru');
     const englishTranslations = await getTranslation(pageCharacters, 'zh', 'en');
 
+    // 调试输出
+    console.log('pageCharacters length:', pageCharacters.length);
+    console.log('russianTranslations length:', russianTranslations.length);
+    console.log('englishTranslations length:', englishTranslations.length);
+
     // 确保翻译数据长度与汉字数组长度相同
     if (russianTranslations.length !== pageCharacters.length || englishTranslations.length !== pageCharacters.length) {
       throw new Error('Translation data length does not match characters length.');
