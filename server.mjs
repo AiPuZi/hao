@@ -1,5 +1,7 @@
-const express = require('express');
-const bodyParser = require('body-parser');
+import express from 'express';
+import fetch from 'node-fetch';
+import bodyParser from 'body-parser';
+
 const app = express();
 const PORT = 3000;
 
@@ -12,8 +14,6 @@ app.post('/translate', async (req, res) => {
   const { textArray, sourceLang, targetLang } = req.body;
 
   try {
-    const fetch = (await import('node-fetch')).default;
-
     const response = await fetch('https://api-free.deepl.com/v2/translate', {
       method: 'POST',
       headers: {
