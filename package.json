@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "deepl": "^1.0.13",
     "hanzi-writer": "^3.6.1",
     "node-fetch": "^3.3.2",
     "pinyin": "^4.0.0-alpha.0",

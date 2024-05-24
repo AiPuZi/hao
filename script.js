@@ -1,5 +1,6 @@
 import HanziWriter from 'hanzi-writer';
 import pinyin from 'pinyin';
+import deepl from 'deepl';
 
 let currentPageIndex = 0; // 当前页码，初始化为 0
 const pageSize = 30; // 每页显示的汉字数
@@ -134,8 +135,8 @@ async function renderOtherCharacters() {
   let russianTranslations = [];
   let englishTranslations = [];
   try {
-    russianTranslations = await getTranslation(pageCharacters, 'zh', 'ru');
-    englishTranslations = await getTranslation(pageCharacters, 'zh', 'en');
+    russianTranslations = await getTranslation(pageCharacters, 'ZH', 'RU');
+    englishTranslations = await getTranslation(pageCharacters, 'ZH', 'EN');
   } catch (error) {
     console.error('Error fetching translations:', error);
   }
@@ -281,18 +282,18 @@ function showNextPage() {
   }
 }
 
-// 异步获取俄文翻译
+// 异步获取翻译
 async function getTranslation(textArray, sourceLang, targetLang) {
-  const response = await fetch('https://libretranslate.de/translate', {
+  const response = await fetch('https://api-free.deepl.com/v2/translate', {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': 'DeepL-Auth-Key 201e4689-0901-4bd6-9775-33ca3046393a:fx' // 将 YOUR_API_KEY 替换为你的 DeepL API 密钥
     },
-    body: JSON.stringify({
-      q: textArray.join('\n'), // 将文本数组连接成单个字符串，每个文本之间以换行符分隔
-      source: sourceLang,
-      target: targetLang,
-      format: 'text'
+    body: new URLSearchParams({
+      text: textArray.join('\n'), // 将文本数组连接成单个字符串，每个文本之间以换行符分隔
+      source_lang: sourceLang,
+      target_lang: targetLang
     })
   });
 
@@ -301,5 +302,5 @@ async function getTranslation(textArray, sourceLang, targetLang) {
   }
 
   const translationData = await response.json();
-  return translationData.translatedText.split('\n'); // 将翻译后的文本按换行符分割成数组
+  return translationData.translations.map(translation => translation.text); // 提取翻译后的文本数组
 }
