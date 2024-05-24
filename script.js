@@ -1,5 +1,6 @@
 import HanziWriter from 'hanzi-writer';
 import pinyin from 'pinyin';
+const fetch = require('node-fetch');
 
 let currentPageIndex = 0; // 当前页码，初始化为 0
 const pageSize = 30; // 每页显示的汉字数
@@ -122,7 +123,7 @@ function renderChineseCharacters() {
 }
 
 // 渲染除“chinese”以外的其他分类（新的渲染方法）
-function renderOtherCharacters() {
+async function renderOtherCharacters() {
   const textContainer = document.getElementById('text-container');
   textContainer.innerHTML = ''; // 清空内容
 
@@ -130,7 +131,17 @@ function renderOtherCharacters() {
   const end = start + pageSize; // 计算当前页面的结束索引
   const pageCharacters = characters.slice(start, end);
 
-  pageCharacters.forEach(function(char, index) {
+  // 获取俄文和英文翻译
+  let russianTranslations = [];
+  let englishTranslations = [];
+  try {
+    russianTranslations = await getTranslation(pageCharacters, 'zh', 'ru');
+    englishTranslations = await getTranslation(pageCharacters, 'zh', 'en');
+  } catch (error) {
+    console.error('Error fetching translations:', error);
+  }
+
+  pageCharacters.forEach((char, index) => {
     const characterBox = document.createElement('div');
     characterBox.classList.add('character-box');
     characterBox.style.display = 'flex';
@@ -155,6 +166,21 @@ function renderOtherCharacters() {
     charText.style.color = '#696969'; // 设置文字颜色
     characterBox.appendChild(charText);
 
+    // 添加翻译容器
+    const translationsContainer = document.createElement('div');
+    translationsContainer.style.marginTop = '10px';
+    characterBox.appendChild(translationsContainer);
+
+    // 显示俄文翻译
+    const russianDiv = document.createElement('div');
+    russianDiv.textContent = russianTranslations[index] ? `俄文: ${russianTranslations[index]}` : '俄文翻译未找到';
+    translationsContainer.appendChild(russianDiv);
+
+    // 显示英文翻译
+    const englishDiv = document.createElement('div');
+    englishDiv.textContent = englishTranslations[index] ? `英文: ${englishTranslations[index]}` : '英文翻译未找到';
+    translationsContainer.appendChild(englishDiv);
+
     // 创建发音按钮并添加到characterBox中
     const pronounceButton = document.createElement('button');
     pronounceButton.innerHTML = '<i class="fas fa-volume-up"></i>';
@@ -169,7 +195,7 @@ function renderOtherCharacters() {
     pronounceButton.style.justifyContent = 'center';
     pronounceButton.style.alignItems = 'center';
     pronounceButton.style.cursor = 'pointer';
-    pronounceButton.addEventListener('click', function() {
+    pronounceButton.addEventListener('click', function () {
       const msg = new SpeechSynthesisUtterance();
       msg.text = char;
       msg.lang = 'zh-CN';
@@ -253,5 +279,38 @@ function showNextPage() {
       renderOtherCharacters();
     }
     renderPagination();
+  }
+}
+
+// 异步获取俄文翻译
+async function getTranslation(textArray, sourceLang, targetLang) {
+  const apiKey = '201e4689-0901-4bd6-9775-33ca3046393a:fx'; // 替换为你的DeepL API Key
+  const encodedText = encodeURIComponent(textArray.join('\n')); // 对文本进行URL编码
+  const url = `https://api-free.deepl.com/v2/translate`;
+  const headers = {
+    'Authorization': `DeepL-Auth-Key ${apiKey}`
+  };
+  const body = new URLSearchParams({
+    'text': encodedText,
+    'source_lang': sourceLang,
+    'target_lang': targetLang
+  });
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: headers,
+      body: body
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const translationData = await response.json();
+    return translationData.translations.map(trans => trans.text);
+  } catch (error) {
+    console.error('Error fetching translation:', error);
+    return [];
   }
 }
