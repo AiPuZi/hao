@@ -283,7 +283,7 @@ function showNextPage() {
 
 // 异步获取俄文翻译
 async function getTranslation(textArray, sourceLang, targetLang) {
-  const apiKey = '201e4689-0901-4bd6-9775-33ca3046393a:fx'; // 替换为你的DeepL API Key
+  const apiKey = process.env.DEEPL_API_KEY; // 从环境变量中获取API密钥
   const encodedText = encodeURIComponent(textArray.join('\n')); // 对文本进行URL编码
   const url = `https://api-free.deepl.com/v2/translate`;
   const headers = {
