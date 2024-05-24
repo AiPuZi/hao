@@ -1,6 +1,5 @@
 import HanziWriter from 'hanzi-writer';
 import pinyin from 'pinyin';
-const fetch = require('node-fetch');
 
 let currentPageIndex = 0; // 当前页码，初始化为 0
 const pageSize = 30; // 每页显示的汉字数
