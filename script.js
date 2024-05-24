@@ -170,14 +170,18 @@ async function renderOtherCharacters() {
     translationsContainer.style.marginTop = '10px';
     characterBox.appendChild(translationsContainer);
 
+    // 确保翻译数组的长度与pageCharacters一致
+    const russianTranslation = russianTranslations[index] ? russianTranslations[index] : '俄文翻译未找到';
+    const englishTranslation = englishTranslations[index] ? englishTranslations[index] : '英文翻译未找到';
+
     // 显示俄文翻译
     const russianDiv = document.createElement('div');
-    russianDiv.textContent = russianTranslations[index] ? `俄文: ${russianTranslations[index]}` : '俄文翻译未找到';
+    russianDiv.textContent = `俄文: ${russianTranslation}`;
     translationsContainer.appendChild(russianDiv);
 
     // 显示英文翻译
     const englishDiv = document.createElement('div');
-    englishDiv.textContent = englishTranslations[index] ? `英文: ${englishTranslations[index]}` : '英文翻译未找到';
+    englishDiv.textContent = `英文: ${englishTranslation}`;
     translationsContainer.appendChild(englishDiv);
 
     // 创建发音按钮并添加到characterBox中
