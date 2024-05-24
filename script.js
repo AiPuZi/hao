@@ -283,7 +283,7 @@ function showNextPage() {
 
 // 异步获取俄文翻译
 async function getTranslation(textArray, sourceLang, targetLang) {
-  const apiUrl = 'https://hao-peach.vercel.app/translate?text=' + encodeURIComponent(textArray.join('\n')) + '&source_lang=' + sourceLang + '&target_lang=' + targetLang;
+  const apiUrl = 'https://hao-peach.vercel.app/api/translate?text=' + encodeURIComponent(textArray.join('\n')) + '&source_lang=' + sourceLang + '&target_lang=' + targetLang;
 
   try {
     const response = await fetch(apiUrl);
