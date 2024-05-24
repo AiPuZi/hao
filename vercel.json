@@ -1,9 +1,8 @@
 {
   "version": 2,
   "functions": {
-    "translate/*": {
-      "runtime": "nodejs14.x",
-      "handler": "translate.handler"
+    "translate/[...slug]": {
+      "filename": "translate.js"
     }
   }
 }
