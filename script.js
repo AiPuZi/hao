@@ -39,12 +39,24 @@ function loadCategoryData(jsonFile) {
       characters = data; // 将加载的数据赋值给 characters 变量
       currentPageIndex = 0; // 重置当前页码为 0
       currentCategory = jsonFile; // 更新当前分类
-      renderPagination(); // 渲染分页按钮
-      if (jsonFile === 'chinese.json') {
-        renderChineseCharacters(); // 对于“chinese”分类，使用原有的渲染方法
-      } else {
-        renderOtherCharacters(); // 对于其他分类，使用新的渲染方法
-      }
+
+      // 获取所有翻译
+      Promise.all([
+        getTranslation(characters, 'zh', 'ru'),
+        getTranslation(characters, 'zh', 'en')
+      ]).then(([russianTrans, englishTrans]) => {
+        characters.forEach((char, index) => {
+          char.russianTranslation = russianTrans[index];
+          char.englishTranslation = englishTrans[index];
+        });
+
+        renderPagination(); // 渲染分页按钮
+        if (jsonFile === 'chinese.json') {
+          renderChineseCharacters(); // 对于“chinese”分类，使用原有的渲染方法
+        } else {
+          renderOtherCharacters(); // 对于其他分类，使用新的渲染方法
+        }
+      }).catch(error => console.error('Error fetching translations:', error));
     })
     .catch(error => console.error('Error fetching JSON:', error));
 }
@@ -138,8 +150,6 @@ async function renderOtherCharacters() {
     englishTranslations = await getTranslation(pageCharacters, 'zh', 'en');
   } catch (error) {
     console.error('Error fetching translations:', error);
-    russianTranslations = pageCharacters.map(() => '俄文翻译未找到');
-    englishTranslations = pageCharacters.map(() => '英文翻译未找到');
   }
 
   pageCharacters.forEach((char, index) => {
@@ -173,14 +183,14 @@ async function renderOtherCharacters() {
     characterBox.appendChild(translationsContainer);
 
     // 显示俄文翻译
-    const russianDiv = document.createElement('div');
-    russianDiv.textContent = `俄文: ${russianTranslations[index]}`;
-    translationsContainer.appendChild(russianDiv);
+const russianDiv = document.createElement('div');
+russianDiv.textContent = character.russianTranslation || '俄文翻译未找到';
+translationsContainer.appendChild(russianDiv);
 
-    // 显示英文翻译
-    const englishDiv = document.createElement('div');
-    englishDiv.textContent = `英文: ${englishTranslations[index]}`;
-    translationsContainer.appendChild(englishDiv);
+// 显示英文翻译
+const englishDiv = document.createElement('div');
+englishDiv.textContent = character.englishTranslation || '英文翻译未找到';
+translationsContainer.appendChild(englishDiv);
 
     // 创建发音按钮并添加到characterBox中
     const pronounceButton = document.createElement('button');
@@ -295,15 +305,9 @@ async function getTranslation(textArray, sourceLang, targetLang) {
     }
 
     const translationData = await response.json();
-    
-    // 检查 translationData 是否为数组，并且长度是否与 textArray 一致
-    if (!Array.isArray(translationData) || translationData.length !== textArray.length) {
-      throw new Error('翻译结果长度与请求文本长度不一致');
-    }
-
     return translationData;
   } catch (error) {
     console.error('Error fetching translation:', error);
-    return textArray.map(() => '翻译未找到');
+    return [];
   }
 }
