@@ -140,6 +140,16 @@ async function renderOtherCharacters() {
     console.error('Error fetching translations:', error);
   }
 
+  // 确保翻译数组的长度与pageCharacters一致
+  if (russianTranslations.length !== pageCharacters.length) {
+    console.error('俄文翻译数组长度与汉字数组长度不一致');
+    russianTranslations = pageCharacters.map(() => '俄文翻译未找到');
+  }
+  if (englishTranslations.length !== pageCharacters.length) {
+    console.error('英文翻译数组长度与汉字数组长度不一致');
+    englishTranslations = pageCharacters.map(() => '英文翻译未找到');
+  }
+
   pageCharacters.forEach((char, index) => {
     const characterBox = document.createElement('div');
     characterBox.classList.add('character-box');
@@ -170,18 +180,14 @@ async function renderOtherCharacters() {
     translationsContainer.style.marginTop = '10px';
     characterBox.appendChild(translationsContainer);
 
-    // 确保翻译数组的长度与pageCharacters一致
-    const russianTranslation = russianTranslations[index] ? russianTranslations[index] : '俄文翻译未找到';
-    const englishTranslation = englishTranslations[index] ? englishTranslations[index] : '英文翻译未找到';
-
     // 显示俄文翻译
     const russianDiv = document.createElement('div');
-    russianDiv.textContent = `俄文: ${russianTranslation}`;
+    russianDiv.textContent = `俄文: ${russianTranslations[index]}`;
     translationsContainer.appendChild(russianDiv);
 
     // 显示英文翻译
     const englishDiv = document.createElement('div');
-    englishDiv.textContent = `英文: ${englishTranslation}`;
+    englishDiv.textContent = `英文: ${englishTranslations[index]}`;
     translationsContainer.appendChild(englishDiv);
 
     // 创建发音按钮并添加到characterBox中
