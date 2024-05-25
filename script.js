@@ -162,27 +162,15 @@ async function renderOtherCharacters() {
 
     // Get Russian and English translations
     getTranslation(char, 'zh', 'ru', function (russianTranslation) {
-      if (russianTranslation) {
-        const russianDiv = document.createElement('div');
-        russianDiv.textContent = `俄文: ${russianTranslation}`;
-        translationsContainer.appendChild(russianDiv);
-      } else {
-        const russianDiv = document.createElement('div');
-        russianDiv.textContent = '俄文翻译未找到';
-        translationsContainer.appendChild(russianDiv);
-      }
+      const russianDiv = document.createElement('div');
+      russianDiv.textContent = russianTranslation ? `俄文: ${russianTranslation}` : '俄文翻译未找到';
+      translationsContainer.appendChild(russianDiv);
     });
 
     getTranslation(char, 'zh', 'en', function (englishTranslation) {
-      if (englishTranslation) {
-        const englishDiv = document.createElement('div');
-        englishDiv.textContent = `英文: ${englishTranslation}`;
-        translationsContainer.appendChild(englishDiv);
-      } else {
-        const englishDiv = document.createElement('div');
-        englishDiv.textContent = '英文翻译未找到';
-        translationsContainer.appendChild(englishDiv);
-      }
+      const englishDiv = document.createElement('div');
+      englishDiv.textContent = englishTranslation ? `英文: ${englishTranslation}` : '英文翻译未找到';
+      translationsContainer.appendChild(englishDiv);
     });
 
     // Create pronunciation button and add to characterBox
