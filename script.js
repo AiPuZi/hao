@@ -131,76 +131,82 @@ async function renderOtherCharacters() {
   const pageCharacters = characters.slice(start, end);
 
   // 获取俄文和英文翻译
+  let russianTranslation;
+  let englishTranslation;
   try {
-    const translations = await getTranslation(pageCharacters, 'zh', 'ru');
-
-    pageCharacters.forEach((char, index) => {
-      const characterBox = document.createElement('div');
-      characterBox.classList.add('character-box');
-      characterBox.style.display = 'flex';
-      characterBox.style.flexDirection = 'column'; // 设置flex方向为列，确保拼音在文字上方
-      characterBox.style.alignItems = 'center'; // 居中对齐
-      characterBox.style.padding = '10px';
-      characterBox.style.gap = '10px'; // 增大拼音、文字、按钮之间的间距
-
-      // 创建拼音div并添加到characterBox中
-      const pinyinDiv = document.createElement('div');
-      pinyinDiv.classList.add('pinyin');
-      pinyinDiv.style.fontSize = '16px'; // 设置拼音的字体大小
-      const charPinyin = pinyin(char.text, { style: pinyin.STYLE_TONE });
-      pinyinDiv.textContent = charPinyin.join(' ');
-      characterBox.appendChild(pinyinDiv);
-
-      // 创建文字div并添加到characterBox中
-      const charText = document.createElement('div');
-      charText.textContent = char.text;
-      charText.style.fontSize = '35px'; // 设置文字的字体大小，确保比拼音大
-      charText.style.fontWeight = 'bold'; // 设置文字为粗体
-      charText.style.color = '#696969'; // 设置文字颜色
-      characterBox.appendChild(charText);
-
-      // 添加翻译容器
-      const translationsContainer = document.createElement('div');
-      translationsContainer.style.marginTop = '10px';
-      characterBox.appendChild(translationsContainer);
-
-      // 显示俄文翻译
-      const russianDiv = document.createElement('div');
-      russianDiv.textContent = translations[index] ? `俄文: ${translations[index]}` : '俄文翻译未找到';
-      translationsContainer.appendChild(russianDiv);
-
-      // 显示英文翻译
-      const englishDiv = document.createElement('div');
-      englishDiv.textContent = translations[index] ? `英文: ${translations[index]}` : '英文翻译未找到';
-      translationsContainer.appendChild(englishDiv);
-
-      // 创建发音按钮并添加到characterBox中
-      const pronounceButton = document.createElement('button');
-      pronounceButton.innerHTML = '<i class="fas fa-volume-up"></i>';
-      pronounceButton.style.marginTop = '10px'; // 增大按钮与文字的间距
-      // 应用CSS样式
-      pronounceButton.style.backgroundColor = '#e0e0e0'; // 灰色背景
-      pronounceButton.style.border = 'none';
-      pronounceButton.style.borderRadius = '50%'; // 圆形按钮
-      pronounceButton.style.width = '36px';
-      pronounceButton.style.height = '36px';
-      pronounceButton.style.display = 'flex';
-      pronounceButton.style.justifyContent = 'center';
-      pronounceButton.style.alignItems = 'center';
-      pronounceButton.style.cursor = 'pointer';
-      pronounceButton.addEventListener('click', function () {
-        const msg = new SpeechSynthesisUtterance();
-        msg.text = char.text;
-        msg.lang = 'zh-CN';
-        window.speechSynthesis.speak(msg);
-      });
-      characterBox.appendChild(pronounceButton);
-
-      textContainer.appendChild(characterBox);
-    });
+    russianTranslation = await getTranslation(char, 'zh', 'ru');
+    englishTranslation = await getTranslation(char, 'zh', 'en');
   } catch (error) {
-    console.error('Error rendering characters:', error);
+    console.error('Error fetching translations:', error);
   }
+
+  pageCharacters.forEach((char, index) => {
+    const characterBox = document.createElement('div');
+    characterBox.classList.add('character-box');
+    characterBox.style.display = 'flex';
+    characterBox.style.flexDirection = 'column'; // 设置flex方向为列，确保拼音在文字上方
+    characterBox.style.alignItems = 'center'; // 居中对齐
+    characterBox.style.padding = '10px';
+    characterBox.style.gap = '10px'; // 增大拼音、文字、按钮之间的间距
+
+    // 创建拼音div并添加到characterBox中
+    const pinyinDiv = document.createElement('div');
+    pinyinDiv.classList.add('pinyin');
+    pinyinDiv.style.fontSize = '16px'; // 设置拼音的字体大小
+    const charPinyin = pinyin(char, { style: pinyin.STYLE_TONE });
+    pinyinDiv.textContent = charPinyin.join(' ');
+    characterBox.appendChild(pinyinDiv);
+
+    // 创建文字div并添加到characterBox中
+    const charText = document.createElement('div');
+    charText.textContent = char;
+    charText.style.fontSize = '35px'; // 设置文字的字体大小，确保比拼音大
+    charText.style.fontWeight = 'bold'; // 设置文字为粗体
+    charText.style.color = '#696969'; // 设置文字颜色
+    characterBox.appendChild(charText);
+
+    // 添加翻译容器
+    const translationsContainer = document.createElement('div');
+    translationsContainer.style.marginTop = '10px';
+
+    // 显示俄文翻译
+    const russianDiv = document.createElement('div');
+    russianDiv.textContent = '俄文: ' + (russianTranslation ? russianTranslation : '未找到翻译');
+    translationsContainer.appendChild(russianDiv);
+
+    // 显示英文翻译
+    const englishDiv = document.createElement('div');
+    englishDiv.textContent = '英文: ' + (englishTranslation ? englishTranslation : '未找到翻译');
+    translationsContainer.appendChild(englishDiv);
+
+    // 创建发音按钮并添加到characterBox中
+    const pronounceButton = document.createElement('button');
+    pronounceButton.innerHTML = '<i class="fas fa-volume-up"></i>';
+    pronounceButton.style.marginTop = '10px'; // 增大按钮与文字的间距
+    // 应用CSS样式
+    pronounceButton.style.backgroundColor = '#e0e0e0'; // 灰色背景
+    pronounceButton.style.border = 'none';
+    pronounceButton.style.borderRadius = '50%'; // 圆形按钮
+    pronounceButton.style.width = '36px';
+    pronounceButton.style.height = '36px';
+    pronounceButton.style.display = 'flex';
+    pronounceButton.style.justifyContent = 'center';
+    pronounceButton.style.alignItems = 'center';
+    pronounceButton.style.cursor = 'pointer';
+    pronounceButton.addEventListener('click', function () {
+      const msg = new SpeechSynthesisUtterance();
+      msg.text = char;
+      msg.lang = 'zh-CN';
+      window.speechSynthesis.speak(msg);
+    });
+    characterBox.appendChild(pronounceButton);
+
+    textContainer.appendChild(characterBox);
+
+    // 通过索引将翻译结果添加到对应的汉字元素上
+    const newCharacterBox = textContainer.children[index]; 
+    newCharacterBox.appendChild(translationsContainer);
+  });
 }
 
 // 渲染分页按钮
@@ -279,9 +285,8 @@ function showNextPage() {
 }
 
 // 异步获取俄文翻译
-async function getTranslation(characters, sourceLang, targetLang) {
-  const textArray = characters.map(char => char.text); // 提取需要翻译的文本数组
-  const apiUrl = '/api/translate?text=' + encodeURIComponent(textArray.join('\n')) + '&source_lang=' + sourceLang + '&target_lang=' + targetLang;
+async function getTranslation(textArray, sourceLang, targetLang) {
+  const apiUrl = 'https://hao-peach.vercel.app/api/translate?text=' + encodeURIComponent(textArray.join('\n')) + '&source_lang=' + sourceLang + '&target_lang=' + targetLang;
 
   try {
     const response = await fetch(apiUrl);
@@ -290,11 +295,10 @@ async function getTranslation(characters, sourceLang, targetLang) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const translations = await response.json();
-    return translations;
+    const translationData = await response.json();
+    return translationData;
   } catch (error) {
     console.error('Error fetching translation:', error);
     return [];
   }
 }
-
