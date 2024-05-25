@@ -196,10 +196,9 @@ function renderOtherCharacters() {
     translationsContainer.appendChild(englishDiv);
 
     // 创建发音按钮并添加到characterBox中
-    const pronounceButton = document.createElement('button');
+    const pronounceButton = document.createElement('div');
+    pronounceButton.classList.add('pronounce-button');
     pronounceButton.innerHTML = '<i class="fas fa-volume-up"></i>';
-    pronounceButton.style.marginTop = '10px'; // 增大按钮与文字的间距
-    // 应用CSS样式
     pronounceButton.style.backgroundColor = '#e0e0e0'; // 灰色背景
     pronounceButton.style.border = 'none';
     pronounceButton.style.borderRadius = '50%'; // 圆形按钮
@@ -299,6 +298,9 @@ function showNextPage() {
 // 异步获取翻译
 async function getTranslation(textArray, sourceLang, targetLang) {
   const apiUrl = 'https://hao-peach.vercel.app/api/translate?text=' + encodeURIComponent(textArray.join('\n')) + '&source_lang=' + sourceLang + '&target_lang=' + targetLang;
+  
+  // 打印URL以便调试
+  console.log('Fetching translation from URL:', apiUrl);
 
   try {
     const response = await fetch(apiUrl);
