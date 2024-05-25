@@ -283,27 +283,30 @@ function showNextPage() {
 
 // 异步获取俄文翻译
 async function getTranslation(textArray, sourceLang, targetLang) {
-    const apiUrl = 'https://hao-peach.vercel.app/api/translate?text=' + encodeURIComponent(textArray.join('\n')) + '&source_lang=' + sourceLang + '&target_lang=' + targetLang;
-  
-    try {
-      const response = await fetch(apiUrl);
-  
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-  
-      const translationData = await response.json();
-      // 假设返回的 JSON 数据结构是 { translation: "..." }
-      if (translationData.translation) {
-        return translationData.translation.split('\n');
-      } else {
-        throw new Error('Unexpected translation data format');
-      }
-    } catch (error) {
-      console.error('Error fetching translation:', error);
-      return [];
-    }
+  const apiUrl = 'https://hao-peach.vercel.app/api/translate?text=' + encodeURIComponent(textArray.join('\n')) + '&source_lang=' + sourceLang + '&target_lang=' + targetLang;
+
+  try {
+    const response = await fetch(apiUrl);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const translationData = await response.json();
+    console.log('API Response:', translationData); // 打印API返回的完整数据
+
+    // 假设返回的 JSON 数据结构是 { translation: "..." }
+    if (translationData.translation) {
+      return translationData.translation.split('\n');
+    } else {
+      throw new Error('Unexpected translation data format');
+    }
+  } catch (error) {
+    console.error('Error fetching translation:', error);
+    return [];
   }
+}
+
   
   
   
