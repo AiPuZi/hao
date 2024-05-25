@@ -5,7 +5,6 @@ let currentPageIndex = 0; // 当前页码，初始化为 0
 const pageSize = 30; // 每页显示的汉字数
 const pageGroupSize = 10; // 每组显示的页码数
 let characters = []; // 将从 JSON 文件中动态加载
-let translations = {}; // 存储翻译数据，确保汉字与翻译的对应关系
 let currentCategory = 'chinese.json'; // 当前分类，初始化为 chinese.json
 
 // 页面加载完成后执行
@@ -44,34 +43,10 @@ function loadCategoryData(jsonFile) {
       if (jsonFile === 'chinese.json') {
         renderChineseCharacters(); // 对于“chinese”分类，使用原有的渲染方法
       } else {
-        fetchTranslations(data).then(trans => {
-          translations = trans; // 存储翻译数据
-          renderOtherCharacters(); // 对于其他分类，使用新的渲染方法
-        });
+        renderOtherCharacters(); // 对于其他分类，使用新的渲染方法
       }
     })
     .catch(error => console.error('Error fetching JSON:', error));
-}
-
-// 获取翻译数据
-async function fetchTranslations(characters) {
-  const translationData = {};
-  try {
-    const [russianTranslations, englishTranslations] = await Promise.all([
-      getTranslation(characters, 'zh', 'ru'),
-      getTranslation(characters, 'zh', 'en')
-    ]);
-    characters.forEach((char, index) => {
-      translationData[char] = {
-        russian: russianTranslations[index],
-        english: englishTranslations[index]
-      };
-    });
-  } catch (error) {
-    console.error('Error fetching translations:', error);
-  }
-  console.log('Translation Data:', translationData); // 输出翻译数据进行调试
-  return translationData;
 }
 
 // 渲染“chinese”分类的汉字（原有的渲染方法）
@@ -147,13 +122,23 @@ function renderChineseCharacters() {
 }
 
 // 渲染除“chinese”以外的其他分类（新的渲染方法）
-function renderOtherCharacters() {
+async function renderOtherCharacters() {
   const textContainer = document.getElementById('text-container');
   textContainer.innerHTML = ''; // 清空内容
 
   const start = currentPageIndex * pageSize; // 计算当前页面的起始索引
   const end = start + pageSize; // 计算当前页面的结束索引
   const pageCharacters = characters.slice(start, end);
+
+  // 获取俄文和英文翻译
+  let russianTranslations = [];
+  let englishTranslations = [];
+  try {
+    russianTranslations = await getTranslation(pageCharacters, 'zh', 'ru');
+    englishTranslations = await getTranslation(pageCharacters, 'zh', 'en');
+  } catch (error) {
+    console.error('Error fetching translations:', error);
+  }
 
   pageCharacters.forEach((char, index) => {
     const characterBox = document.createElement('div');
@@ -187,18 +172,19 @@ function renderOtherCharacters() {
 
     // 显示俄文翻译
     const russianDiv = document.createElement('div');
-    russianDiv.textContent = translations[char] && translations[char].russian ? `俄文: ${translations[char].russian}` : '俄文翻译未找到';
+    russianDiv.textContent = russianTranslations[index] || '俄文翻译未找到';
     translationsContainer.appendChild(russianDiv);
 
     // 显示英文翻译
     const englishDiv = document.createElement('div');
-    englishDiv.textContent = translations[char] && translations[char].english ? `英文: ${translations[char].english}` : '英文翻译未找到';
+    englishDiv.textContent = englishTranslations[index] || '英文翻译未找到';
     translationsContainer.appendChild(englishDiv);
 
     // 创建发音按钮并添加到characterBox中
-    const pronounceButton = document.createElement('div');
-    pronounceButton.classList.add('pronounce-button');
+    const pronounceButton = document.createElement('button');
     pronounceButton.innerHTML = '<i class="fas fa-volume-up"></i>';
+    pronounceButton.style.marginTop = '10px'; // 增大按钮与文字的间距
+    // 应用CSS样式
     pronounceButton.style.backgroundColor = '#e0e0e0'; // 灰色背景
     pronounceButton.style.border = 'none';
     pronounceButton.style.borderRadius = '50%'; // 圆形按钮
@@ -295,25 +281,26 @@ function showNextPage() {
   }
 }
 
-// 异步获取翻译
+// 异步获取俄文翻译
 async function getTranslation(textArray, sourceLang, targetLang) {
-  const apiUrl = 'https://hao-peach.vercel.app/api/translate?text=' + encodeURIComponent(textArray.join('\n')) + '&source_lang=' + sourceLang + '&target_lang=' + targetLang;
-  
-  // 打印URL以便调试
-  console.log('Fetching translation from URL:', apiUrl);
+  const promises = textArray.map(async (text) => {
+    const apiUrl = `https://hao-peach.vercel.app/api/translate?text=${encodeURIComponent(text)}&source_lang=${sourceLang}&target_lang=${targetLang}`;
 
-  try {
-    const response = await fetch(apiUrl);
+    try {
+      const response = await fetch(apiUrl);
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const translationData = await response.json();
+      return translationData.translations[0].text;
+    } catch (error) {
+      console.error('Error fetching translation:', error);
+      return null;
     }
+  });
 
-    const translationData = await response.json();
-    console.log('Fetched Translation:', translationData); // 输出获取的翻译数据进行调试
-    return translationData;
-  } catch (error) {
-    console.error('Error fetching translation:', error);
-    return [];
-  }
+  const translations = await Promise.all(promises);
+  return translations;
 }
