@@ -138,15 +138,7 @@ async function renderOtherCharacters() {
     englishTranslations = await getTranslation(pageCharacters, 'zh', 'en');
   } catch (error) {
     console.error('Error fetching translations:', error);
-  }
-
-  // 确保翻译数组的长度与pageCharacters一致
-  if (russianTranslations.length !== pageCharacters.length) {
-    console.error('俄文翻译数组长度与汉字数组长度不一致');
     russianTranslations = pageCharacters.map(() => '俄文翻译未找到');
-  }
-  if (englishTranslations.length !== pageCharacters.length) {
-    console.error('英文翻译数组长度与汉字数组长度不一致');
     englishTranslations = pageCharacters.map(() => '英文翻译未找到');
   }
 
@@ -303,9 +295,15 @@ async function getTranslation(textArray, sourceLang, targetLang) {
     }
 
     const translationData = await response.json();
+    
+    // 检查 translationData 是否为数组，并且长度是否与 textArray 一致
+    if (!Array.isArray(translationData) || translationData.length !== textArray.length) {
+      throw new Error('翻译结果长度与请求文本长度不一致');
+    }
+
     return translationData;
   } catch (error) {
     console.error('Error fetching translation:', error);
-    return [];
+    return textArray.map(() => '翻译未找到');
   }
 }
