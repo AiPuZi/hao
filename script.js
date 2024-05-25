@@ -5,6 +5,7 @@ let currentPageIndex = 0; // 当前页码，初始化为 0
 const pageSize = 30; // 每页显示的汉字数
 const pageGroupSize = 10; // 每组显示的页码数
 let characters = []; // 将从 JSON 文件中动态加载
+let translations = {}; // 存储翻译数据，确保汉字与翻译的对应关系
 let currentCategory = 'chinese.json'; // 当前分类，初始化为 chinese.json
 
 // 页面加载完成后执行
@@ -39,26 +40,37 @@ function loadCategoryData(jsonFile) {
       characters = data; // 将加载的数据赋值给 characters 变量
       currentPageIndex = 0; // 重置当前页码为 0
       currentCategory = jsonFile; // 更新当前分类
-
-      // 获取所有翻译
-      Promise.all([
-        getTranslation(characters, 'zh', 'ru'),
-        getTranslation(characters, 'zh', 'en')
-      ]).then(([russianTrans, englishTrans]) => {
-        characters.forEach((char, index) => {
-          char.russianTranslation = russianTrans[index];
-          char.englishTranslation = englishTrans[index];
-        });
-
-        renderPagination(); // 渲染分页按钮
-        if (jsonFile === 'chinese.json') {
-          renderChineseCharacters(); // 对于“chinese”分类，使用原有的渲染方法
-        } else {
+      renderPagination(); // 渲染分页按钮
+      if (jsonFile === 'chinese.json') {
+        renderChineseCharacters(); // 对于“chinese”分类，使用原有的渲染方法
+      } else {
+        fetchTranslations(data).then(trans => {
+          translations = trans; // 存储翻译数据
           renderOtherCharacters(); // 对于其他分类，使用新的渲染方法
-        }
-      }).catch(error => console.error('Error fetching translations:', error));
+        });
+      }
     })
     .catch(error => console.error('Error fetching JSON:', error));
+}
+
+// 获取翻译数据
+async function fetchTranslations(characters) {
+  const translationData = {};
+  try {
+    const [russianTranslations, englishTranslations] = await Promise.all([
+      getTranslation(characters, 'zh', 'ru'),
+      getTranslation(characters, 'zh', 'en')
+    ]);
+    characters.forEach((char, index) => {
+      translationData[char] = {
+        russian: russianTranslations[index],
+        english: englishTranslations[index]
+      };
+    });
+  } catch (error) {
+    console.error('Error fetching translations:', error);
+  }
+  return translationData;
 }
 
 // 渲染“chinese”分类的汉字（原有的渲染方法）
@@ -134,23 +146,13 @@ function renderChineseCharacters() {
 }
 
 // 渲染除“chinese”以外的其他分类（新的渲染方法）
-async function renderOtherCharacters() {
+function renderOtherCharacters() {
   const textContainer = document.getElementById('text-container');
   textContainer.innerHTML = ''; // 清空内容
 
   const start = currentPageIndex * pageSize; // 计算当前页面的起始索引
   const end = start + pageSize; // 计算当前页面的结束索引
   const pageCharacters = characters.slice(start, end);
-
-  // 获取俄文和英文翻译
-  let russianTranslations = [];
-  let englishTranslations = [];
-  try {
-    russianTranslations = await getTranslation(pageCharacters, 'zh', 'ru');
-    englishTranslations = await getTranslation(pageCharacters, 'zh', 'en');
-  } catch (error) {
-    console.error('Error fetching translations:', error);
-  }
 
   pageCharacters.forEach((char, index) => {
     const characterBox = document.createElement('div');
@@ -183,14 +185,14 @@ async function renderOtherCharacters() {
     characterBox.appendChild(translationsContainer);
 
     // 显示俄文翻译
-const russianDiv = document.createElement('div');
-russianDiv.textContent = character.russianTranslation || '俄文翻译未找到';
-translationsContainer.appendChild(russianDiv);
+    const russianDiv = document.createElement('div');
+    russianDiv.textContent = translations[char] && translations[char].russian ? `俄文: ${translations[char].russian}` : '俄文翻译未找到';
+    translationsContainer.appendChild(russianDiv);
 
-// 显示英文翻译
-const englishDiv = document.createElement('div');
-englishDiv.textContent = character.englishTranslation || '英文翻译未找到';
-translationsContainer.appendChild(englishDiv);
+    // 显示英文翻译
+    const englishDiv = document.createElement('div');
+    englishDiv.textContent = translations[char] && translations[char].english ? `英文: ${translations[char].english}` : '英文翻译未找到';
+    translationsContainer.appendChild(englishDiv);
 
     // 创建发音按钮并添加到characterBox中
     const pronounceButton = document.createElement('button');
@@ -293,7 +295,7 @@ function showNextPage() {
   }
 }
 
-// 异步获取俄文翻译
+// 异步获取翻译
 async function getTranslation(textArray, sourceLang, targetLang) {
   const apiUrl = 'https://hao-peach.vercel.app/api/translate?text=' + encodeURIComponent(textArray.join('\n')) + '&source_lang=' + sourceLang + '&target_lang=' + targetLang;
 
