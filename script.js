@@ -283,7 +283,8 @@ function showNextPage() {
 
 // 异步获取俄文翻译
 async function getTranslation(textArray, sourceLang, targetLang) {
-  const apiUrl = 'https://hao-peach.vercel.app/api/translate?text=' + encodeURIComponent(textArray.join('\n')) + '&source_lang=' + sourceLang + '&target_lang=' + targetLang;
+  // 构建API请求的URL，确保替换'your-vercel-project-name'为你的实际项目名
+  const apiUrl = `https://hao-peach.vercel.app/api/translate?text=${encodeURIComponent(textArray.join('\n'))}&source_lang=${sourceLang}&target_lang=${targetLang}`;
 
   try {
     const response = await fetch(apiUrl);
@@ -293,9 +294,11 @@ async function getTranslation(textArray, sourceLang, targetLang) {
     }
 
     const translationData = await response.json();
-    return translationData;
+    // 确保返回的是翻译文本数组
+    return translationData.map(trans => trans.text);
   } catch (error) {
     console.error('Error fetching translation:', error);
+    // 返回空数组以处理错误情况
     return [];
   }
 }
