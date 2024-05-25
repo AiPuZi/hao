@@ -121,7 +121,7 @@ function renderChineseCharacters() {
   });
 }
 
-// 渲染除“chinese”以外的其他分类（新的渲染方法）
+// 渲染除“chinese”以外的其他分类的汉字
 async function renderOtherCharacters() {
   const textContainer = document.getElementById('text-container');
   textContainer.innerHTML = ''; // 清空内容
@@ -134,6 +134,7 @@ async function renderOtherCharacters() {
   let russianTranslations = [];
   let englishTranslations = [];
   try {
+    // 注意: 这里假设getTranslation函数是异步的并返回一个包含翻译的数组
     russianTranslations = await getTranslation(pageCharacters, 'zh', 'ru');
     englishTranslations = await getTranslation(pageCharacters, 'zh', 'en');
   } catch (error) {
@@ -144,50 +145,43 @@ async function renderOtherCharacters() {
     const characterBox = document.createElement('div');
     characterBox.classList.add('character-box');
     characterBox.style.display = 'flex';
-    characterBox.style.flexDirection = 'column'; // 设置flex方向为列，确保拼音在文字上方
-    characterBox.style.alignItems = 'center'; // 居中对齐
+    characterBox.style.flexDirection = 'column';
+    characterBox.style.alignItems = 'center';
     characterBox.style.padding = '10px';
-    characterBox.style.gap = '10px'; // 增大拼音、文字、按钮之间的间距
+    characterBox.style.gap = '10px';
 
-    // 创建拼音div并添加到characterBox中
     const pinyinDiv = document.createElement('div');
     pinyinDiv.classList.add('pinyin');
-    pinyinDiv.style.fontSize = '16px'; // 设置拼音的字体大小
+    pinyinDiv.style.fontSize = '16px';
     const charPinyin = pinyin(char, { style: pinyin.STYLE_TONE });
     pinyinDiv.textContent = charPinyin.join(' ');
     characterBox.appendChild(pinyinDiv);
 
-    // 创建文字div并添加到characterBox中
     const charText = document.createElement('div');
     charText.textContent = char;
-    charText.style.fontSize = '35px'; // 设置文字的字体大小，确保比拼音大
-    charText.style.fontWeight = 'bold'; // 设置文字为粗体
-    charText.style.color = '#696969'; // 设置文字颜色
+    charText.style.fontSize = '35px';
+    charText.style.fontWeight = 'bold';
+    charText.style.color = '#696969';
     characterBox.appendChild(charText);
 
-    // 添加翻译容器
     const translationsContainer = document.createElement('div');
     translationsContainer.style.marginTop = '10px';
     characterBox.appendChild(translationsContainer);
 
-    // 显示俄文翻译
     const russianDiv = document.createElement('div');
-    russianDiv.textContent = russianTranslations[index] || '俄文翻译未找到';
+    russianDiv.textContent = russianTranslations[index] ? `俄文: ${russianTranslations[index]}` : '俄文翻译未找到';
     translationsContainer.appendChild(russianDiv);
 
-    // 显示英文翻译
     const englishDiv = document.createElement('div');
-    englishDiv.textContent = englishTranslations[index] || '英文翻译未找到';
+    englishDiv.textContent = englishTranslations[index] ? `英文: ${englishTranslations[index]}` : '英文翻译未找到';
     translationsContainer.appendChild(englishDiv);
 
-    // 创建发音按钮并添加到characterBox中
     const pronounceButton = document.createElement('button');
     pronounceButton.innerHTML = '<i class="fas fa-volume-up"></i>';
-    pronounceButton.style.marginTop = '10px'; // 增大按钮与文字的间距
-    // 应用CSS样式
-    pronounceButton.style.backgroundColor = '#e0e0e0'; // 灰色背景
+    pronounceButton.style.marginTop = '10px';
+    pronounceButton.style.backgroundColor = '#e0e0e0';
     pronounceButton.style.border = 'none';
-    pronounceButton.style.borderRadius = '50%'; // 圆形按钮
+    pronounceButton.style.borderRadius = '50%';
     pronounceButton.style.width = '36px';
     pronounceButton.style.height = '36px';
     pronounceButton.style.display = 'flex';
@@ -283,24 +277,19 @@ function showNextPage() {
 
 // 异步获取俄文翻译
 async function getTranslation(textArray, sourceLang, targetLang) {
-  const promises = textArray.map(async (text) => {
-    const apiUrl = `https://hao-peach.vercel.app/api/translate?text=${encodeURIComponent(text)}&source_lang=${sourceLang}&target_lang=${targetLang}`;
+  const apiUrl = 'https://hao-peach.vercel.app/api/translate?text=' + encodeURIComponent(textArray.join('\n')) + '&source_lang=' + sourceLang + '&target_lang=' + targetLang;
 
-    try {
-      const response = await fetch(apiUrl);
+  try {
+    const response = await fetch(apiUrl);
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const translationData = await response.json();
-      return translationData.translations[0].text;
-    } catch (error) {
-      console.error('Error fetching translation:', error);
-      return null;
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-  });
 
-  const translations = await Promise.all(promises);
-  return translations;
+    const translationData = await response.json();
+    return translationData;
+  } catch (error) {
+    console.error('Error fetching translation:', error);
+    return [];
+  }
 }
