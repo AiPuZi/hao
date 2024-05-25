@@ -277,6 +277,7 @@ function showNextPage() {
 
 // 异步获取俄文翻译
 async function getTranslation(textArray, sourceLang, targetLang) {
+  // 确保使用您部署在Vercel的代理API的正确URL
   const apiUrl = 'https://hao-peach.vercel.app/api/translate?text=' + encodeURIComponent(textArray.join('\n')) + '&source_lang=' + sourceLang + '&target_lang=' + targetLang;
 
   try {
