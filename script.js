@@ -131,11 +131,11 @@ async function renderOtherCharacters() {
   const pageCharacters = characters.slice(start, end);
 
   // 获取俄文和英文翻译
-  let russianTranslation;
-  let englishTranslation;
+  let russianTranslations = [];
+  let englishTranslations = [];
   try {
-    russianTranslation = await getTranslation(char, 'zh', 'ru');
-    englishTranslation = await getTranslation(char, 'zh', 'en');
+    russianTranslations = await getTranslation(pageCharacters, 'zh', 'ru');
+    englishTranslations = await getTranslation(pageCharacters, 'zh', 'en');
   } catch (error) {
     console.error('Error fetching translations:', error);
   }
@@ -168,15 +168,16 @@ async function renderOtherCharacters() {
     // 添加翻译容器
     const translationsContainer = document.createElement('div');
     translationsContainer.style.marginTop = '10px';
+    characterBox.appendChild(translationsContainer);
 
     // 显示俄文翻译
     const russianDiv = document.createElement('div');
-    russianDiv.textContent = '俄文: ' + (russianTranslation ? russianTranslation : '未找到翻译');
+    russianDiv.textContent = russianTranslations[index] ? `俄文: ${russianTranslations[index]}` : '俄文翻译未找到';
     translationsContainer.appendChild(russianDiv);
 
     // 显示英文翻译
     const englishDiv = document.createElement('div');
-    englishDiv.textContent = '英文: ' + (englishTranslation ? englishTranslation : '未找到翻译');
+    englishDiv.textContent = englishTranslations[index] ? `英文: ${englishTranslations[index]}` : '英文翻译未找到';
     translationsContainer.appendChild(englishDiv);
 
     // 创建发音按钮并添加到characterBox中
@@ -202,10 +203,6 @@ async function renderOtherCharacters() {
     characterBox.appendChild(pronounceButton);
 
     textContainer.appendChild(characterBox);
-
-    // 通过索引将翻译结果添加到对应的汉字元素上
-    const newCharacterBox = textContainer.children[index]; 
-    newCharacterBox.appendChild(translationsContainer);
   });
 }
 
