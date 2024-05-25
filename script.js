@@ -70,6 +70,7 @@ async function fetchTranslations(characters) {
   } catch (error) {
     console.error('Error fetching translations:', error);
   }
+  console.log('Translation Data:', translationData); // 输出翻译数据进行调试
   return translationData;
 }
 
@@ -307,6 +308,7 @@ async function getTranslation(textArray, sourceLang, targetLang) {
     }
 
     const translationData = await response.json();
+    console.log('Fetched Translation:', translationData); // 输出获取的翻译数据进行调试
     return translationData;
   } catch (error) {
     console.error('Error fetching translation:', error);
