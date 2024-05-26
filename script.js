@@ -131,7 +131,7 @@ async function renderOtherCharacters() {
   const pageCharacters = characters.slice(start, end);
 
   // 获取俄文和英文翻译
-  let translations = [];
+  let translations = {}; // 初始化为空对象
   try {
     translations = await getTranslation(pageCharacters, 'zh', 'ru');
   } catch (error) {
@@ -170,14 +170,16 @@ async function renderOtherCharacters() {
 
     // 显示俄文翻译
     const russianDiv = document.createElement('div');
+    //  使用索引访问对应的翻译结果
     russianDiv.textContent = translations[index] ? `俄文: ${translations[index][0]}` : '俄文翻译未找到'; 
     translationsContainer.appendChild(russianDiv);
 
     // 显示英文翻译
     const englishDiv = document.createElement('div');
+    //  使用索引访问对应的翻译结果
     englishDiv.textContent = translations[index] ? `英文: ${translations[index][1]}` : '英文翻译未找到'; 
     translationsContainer.appendChild(englishDiv);
-    
+
     // 创建发音按钮并添加到characterBox中
     const pronounceButton = document.createElement('button');
     pronounceButton.innerHTML = '<i class="fas fa-volume-up"></i>';
@@ -292,15 +294,15 @@ async function getTranslation(textArray, sourceLang, targetLang) {
 
     const translationData = await response.json();
 
-    // 将翻译结果处理成嵌套数组
-    const translations = [];
+    //  将翻译结果存储在对象中， 并根据索引访问
+    const translations = {};
     for (let i = 0; i < textArray.length; i++) {
-      translations.push([translationData[i * 2], translationData[i * 2 + 1]]);
+      translations[i] = [translationData[i * 2], translationData[i * 2 + 1]];
     }
-
+    
     return translations; 
   } catch (error) {
     console.error('Error fetching translation:', error);
-    return [];
+    return {}; // 返回空对象， 避免后续代码报错
   }
 }
