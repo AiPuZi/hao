@@ -134,8 +134,10 @@ async function renderOtherCharacters() {
   let russianTranslations = [];
   let englishTranslations = [];
   try {
-    russianTranslations = await getTranslation(pageCharacters, 'ZH', 'RU');
-    englishTranslations = await getTranslation(pageCharacters, 'ZH', 'EN');
+    [russianTranslations, englishTranslations] = await Promise.all([
+      getTranslation(pageCharacters, 'zh', 'ru'),
+      getTranslation(pageCharacters, 'zh', 'en')
+    ]);
   } catch (error) {
     console.error('Error fetching translations:', error);
   }
@@ -147,7 +149,7 @@ async function renderOtherCharacters() {
     characterBox.style.flexDirection = 'column'; // 设置flex方向为列，确保拼音在文字上方
     characterBox.style.alignItems = 'center'; // 居中对齐
     characterBox.style.padding = '10px';
-    characterBox.style.gap = '10px'; // 墛大拼音、文字、按钮之间的间距
+    characterBox.style.gap = '10px'; // 增大拼音、文字、按钮之间的间距
 
     // 创建拼音div并添加到characterBox中
     const pinyinDiv = document.createElement('div');
@@ -180,107 +182,122 @@ async function renderOtherCharacters() {
     englishDiv.textContent = englishTranslations[index] ? `英文: ${englishTranslations[index]}` : '英文翻译未找到';
     translationsContainer.appendChild(englishDiv);
 
-    // 创建播放动画按钮并添加到characterBox中
-    const animateButton = document.createElement('button');
-    animateButton.innerHTML = '<i class="fas fa-play"></i>';
-    characterBox.appendChild(animateButton);
-
     // 创建发音按钮并添加到characterBox中
     const pronounceButton = document.createElement('button');
     pronounceButton.innerHTML = '<i class="fas fa-volume-up"></i>';
-    characterBox.appendChild(pronounceButton);
-
-    textContainer.appendChild(characterBox);
-
-    // 创建汉字写作实例
-    const writer = HanziWriter.create(characterBox, char, {
-      width: 100,
-      height: 100,
-      padding: 5,
-      showOutline: true // 显示汉字轮廓
-    });
-
-    // 为播放动画按钮添加点击事件
-    animateButton.addEventListener('click', function() {
-      writer.animateCharacter();
-    });
-
-    // 为发音按钮添加点击事件
-    pronounceButton.addEventListener('click', function() {
+    pronounceButton.style.marginTop = '10px'; // 增大按钮与文字的间距
+    // 应用CSS样式
+    pronounceButton.style.backgroundColor = '#e0e0e0'; // 灰色背景
+    pronounceButton.style.border = 'none';
+    pronounceButton.style.borderRadius = '50%'; // 圆形按钮
+    pronounceButton.style.width = '36px';
+    pronounceButton.style.height = '36px';
+    pronounceButton.style.display = 'flex';
+    pronounceButton.style.justifyContent = 'center';
+    pronounceButton.style.alignItems = 'center';
+    pronounceButton.style.cursor = 'pointer';
+    pronounceButton.addEventListener('click', function () {
       const msg = new SpeechSynthesisUtterance();
       msg.text = char;
       msg.lang = 'zh-CN';
       window.speechSynthesis.speak(msg);
     });
-  });
-}
+    characterBox.appendChild(pronounceButton);
 
-// 获取翻译的函数
-async function getTranslation(texts, from, to) {
-  const url = `/api/translate?text=${encodeURIComponent(texts.join('\n'))}&source_lang=${from}&target_lang=${to}`;
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-  const data = await response.json();
-  return data;
+    textContainer.appendChild(characterBox);
+  });
 }
 
 // 渲染分页按钮
 function renderPagination() {
   const paginationContainer = document.getElementById('pagination-container');
-  paginationContainer.innerHTML = '';
+  paginationContainer.innerHTML = ''; // 清空分页按钮
 
-  const totalPages = Math.ceil(characters.length / pageSize);
+  const totalPages = Math.ceil(characters.length / pageSize); // 计算总页数
 
-  const startPage = Math.floor(currentPageIndex / pageGroupSize) * pageGroupSize;
-  const endPage = Math.min(startPage + pageGroupSize, totalPages);
+  // 设置上一页按钮的属性和事件
+  const prevPageButton = document.getElementById('prev-page');
+  prevPageButton.disabled = currentPageIndex === 0;
+  prevPageButton.onclick = showPrevPage;
 
-  if (startPage > 0) {
-    const prevGroupButton = document.createElement('button');
-    prevGroupButton.textContent = '<<';
-    prevGroupButton.addEventListener('click', function() {
-      currentPageIndex = startPage - 1;
-      renderPagination();
-      if (currentCategory === 'chinese.json') {
-        renderChineseCharacters();
-      } else {
-        renderOtherCharacters();
-      }
-    });
-    paginationContainer.appendChild(prevGroupButton);
+  // 设置下一页按钮的属性和事件
+  const nextPageButton = document.getElementById('next-page');
+  nextPageButton.disabled = currentPageIndex === totalPages - 1;
+  nextPageButton.onclick = showNextPage;
+
+  // 如果总页数小于等于1，直接返回，不再渲染页码按钮
+  if (totalPages <= 1) {
+    return;
   }
 
+  // 添加页码按钮
+  const groupIndex = Math.floor(currentPageIndex / pageGroupSize); // 当前页码组索引
+  const startPage = groupIndex * pageGroupSize; // 当前页码组的起始页码
+  const endPage = Math.min(startPage + pageGroupSize, totalPages); // 当前页码组的结束页码
   for (let i = startPage; i < endPage; i++) {
-    const pageButton = document.createElement('button');
-    pageButton.textContent = (i + 1).toString();
-    if (i === currentPageIndex) {
-      pageButton.classList.add('active');
-    }
-    pageButton.addEventListener('click', function() {
-      currentPageIndex = i;
-      renderPagination();
-      if (currentCategory === 'chinese.json') {
-        renderChineseCharacters();
-      } else {
-        renderOtherCharacters();
-      }
-    });
-    paginationContainer.appendChild(pageButton);
+    const pageBtn = document.createElement('button');
+    pageBtn.innerText = i + 1;
+    pageBtn.className = currentPageIndex === i ? 'active' : '';
+    pageBtn.onclick = (function(i) {
+      return function() {
+        currentPageIndex = i;
+        // 根据当前分类调用相应的渲染函数
+        if (currentCategory === 'chinese.json') {
+          renderChineseCharacters();
+        } else {
+          renderOtherCharacters();
+        }
+        renderPagination();
+      };
+    })(i);
+    paginationContainer.appendChild(pageBtn);
   }
+}
 
-  if (endPage < totalPages) {
-    const nextGroupButton = document.createElement('button');
-    nextGroupButton.textContent = '>>';
-    nextGroupButton.addEventListener('click', function() {
-      currentPageIndex = endPage;
-      renderPagination();
-      if (currentCategory === 'chinese.json') {
-        renderChineseCharacters();
-      } else {
-        renderOtherCharacters();
-      }
-    });
-    paginationContainer.appendChild(nextGroupButton);
+// 上一页函数
+function showPrevPage() {
+  if (currentPageIndex > 0) {
+    currentPageIndex--;
+    // 根据当前分类调用相应的渲染函数
+    if (currentCategory === 'chinese.json') {
+      renderChineseCharacters();
+    } else {
+      renderOtherCharacters();
+    }
+    renderPagination();
+  }
+}
+
+// 下一页函数
+function showNextPage() {
+  const totalPages = Math.ceil(characters.length / pageSize);
+  if (currentPageIndex < totalPages - 1) {
+    currentPageIndex++;
+    // 根据当前分类调用相应的渲染函数
+    if (currentCategory === 'chinese.json') {
+      renderChineseCharacters();
+    } else {
+      renderOtherCharacters();
+    }
+    renderPagination();
+  }
+}
+
+// 异步获取俄文翻译
+async function getTranslation(textArray, sourceLang, targetLang) {
+  const apiUrl = 'https://hao-peach.vercel.app/api/translate?text=' + encodeURIComponent(textArray.join('\n')) + '&source_lang=' + sourceLang + '&target_lang=' + targetLang;
+
+  try {
+    const response = await fetch(apiUrl);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const translationData = await response.json();
+    return translationData;
+  } catch (error) {
+    console.error('Error fetching translation:', error);
+    return [];
   }
 }
