@@ -294,10 +294,10 @@ async function getTranslation(textArray, sourceLang, targetLang) {
 
     const translationData = await response.json();
 
-    //  将翻译结果存储在对象中， 并根据索引访问
+    // 正确解析翻译结果
     const translations = {};
     for (let i = 0; i < textArray.length; i++) {
-      translations[i] = [translationData[i * 2], translationData[i * 2 + 1]];
+      translations[i] = [translationData[i * 2], translationData[i * 2 + 1]]; // 提取对应索引的翻译结果
     }
     
     return translations; 
