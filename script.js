@@ -294,6 +294,8 @@ async function getTranslation(textArray, sourceLang, targetLang) {
 
     const translationData = await response.json();
 
+    console.log("translationData:", translationData); // 打印翻译数据
+
     // 正确解析翻译结果
     const translations = {};
     for (let i = 0; i < textArray.length; i++) {
