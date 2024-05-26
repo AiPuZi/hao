@@ -293,16 +293,18 @@ async function getTranslation(textArray, sourceLang, targetLang) {
     }
 
     const translationData = await response.json();
+    console.log("translationData:", translationData);
 
-    console.log("translationData:", translationData); // 打印翻译数据
+    //  将翻译结果分割成数组
+    const translations = translationData.map(translation => translation.split('\n')); 
 
-    // 正确解析翻译结果
-    const translations = {};
+    //  将每个词组的翻译结果与 textArray 中的词组一一对应
+    const result = {};
     for (let i = 0; i < textArray.length; i++) {
-      translations[i] = [translationData[i * 2], translationData[i * 2 + 1]]; // 提取对应索引的翻译结果
+      result[i] = translations[i] || []; //  如果 translations[i] 不存在，则设置为 [], 避免 undefined 错误
     }
-    
-    return translations; 
+
+    return result;
   } catch (error) {
     console.error('Error fetching translation:', error);
     return {}; // 返回空对象， 避免后续代码报错
