@@ -131,13 +131,9 @@ async function renderOtherCharacters() {
   const pageCharacters = characters.slice(start, end);
 
   // 获取俄文和英文翻译
-  let russianTranslations = [];
-  let englishTranslations = [];
+  let translations = [];
   try {
-    [russianTranslations, englishTranslations] = await Promise.all([
-      getTranslation(pageCharacters, 'zh', 'ru'),
-      getTranslation(pageCharacters, 'zh', 'en')
-    ]);
+    translations = await getTranslation(pageCharacters, 'zh', 'ru');
   } catch (error) {
     console.error('Error fetching translations:', error);
   }
@@ -174,14 +170,14 @@ async function renderOtherCharacters() {
 
     // 显示俄文翻译
     const russianDiv = document.createElement('div');
-    russianDiv.textContent = russianTranslations[index] ? `俄文: ${russianTranslations[index]}` : '俄文翻译未找到';
+    russianDiv.textContent = translations[index] ? `俄文: ${translations[index][0]}` : '俄文翻译未找到'; 
     translationsContainer.appendChild(russianDiv);
 
     // 显示英文翻译
     const englishDiv = document.createElement('div');
-    englishDiv.textContent = englishTranslations[index] ? `英文: ${englishTranslations[index]}` : '英文翻译未找到';
+    englishDiv.textContent = translations[index] ? `英文: ${translations[index][1]}` : '英文翻译未找到'; 
     translationsContainer.appendChild(englishDiv);
-
+    
     // 创建发音按钮并添加到characterBox中
     const pronounceButton = document.createElement('button');
     pronounceButton.innerHTML = '<i class="fas fa-volume-up"></i>';
@@ -295,7 +291,14 @@ async function getTranslation(textArray, sourceLang, targetLang) {
     }
 
     const translationData = await response.json();
-    return translationData;
+
+    // 将翻译结果处理成嵌套数组
+    const translations = [];
+    for (let i = 0; i < textArray.length; i++) {
+      translations.push([translationData[i * 2], translationData[i * 2 + 1]]);
+    }
+
+    return translations; 
   } catch (error) {
     console.error('Error fetching translation:', error);
     return [];
