@@ -20,22 +20,26 @@ body {
     right: 0;
     z-index: 1000;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+    height: 50px; /* Ensure the header height */
 }
 
 .logo {
     font-size: 25px;
-    z-index: 1001; /* 确保.logo在.navigation之上 */
     font-weight: bold;
     color: #fff;
     text-decoration: none;
+    position: absolute;
+    left: 20px; /* Ensure logo is fixed to the left */
+    display: flex;
+    align-items: center;
 }
 
 .navigation {
     position: absolute;
-    left: 0;
-    right: 0;
+    left: 50%;
+    transform: translateX(-50%);
     text-align: center;
 }
 
@@ -46,9 +50,23 @@ body {
     font-size: 18px;
 }
 
+.language-switch {
+    position: absolute;
+    right: 20px;
+    display: flex; /* Use flex layout to ensure horizontal alignment of children */
+    align-items: center; /* Vertically center align children */
+}
+
+.language-switch a, .language-switch span {
+    margin: 0 5px; /* Set left and right margin for language switch links */
+    text-decoration: none;
+    color: #fff; /* Set color to white */
+    font-size: 16px; /* Increase font size for better readability */
+}
+
 main {
     width: 1100px; /* Width of the main container */
-    margin: 60px auto 20px; /* Adjusted top margin to avoid overlapping with the header */
+    margin: 60px auto 20px;  /* Increased top margin for more space between header and content */
     padding: 13px;
     background-color: #fff; /* Set main background to white */
     display: grid;
@@ -115,27 +133,30 @@ main {
     font-size: 0.8em;
     font-family: 'Microsoft YaHei', Arial, sans-serif; /* 设置字体为微软雅黑，如果不可用则回退到Arial */
     margin-top: 10px; /* 与上方内容的间距 */
-  }
+}
   
-  .footer a {
+.footer a {
     color: #505050; /* 链接文字颜色也设置为中等灰色 */
     text-decoration: none; /* 移除下划线 */
 }
 
-    // 调整分页按钮样式
-  .button-container {
+.footer p {
+    margin-bottom: 10px; /* 段落之间的下边距 */
+}
+
+.button-container {
     display: flex;
     align-items: center;
     justify-content: center;
-  }
+}
   
-  #pagination-container {
+#pagination-container {
     display: flex;
     align-items: center;
     margin: 0 10px;
-  }
+}
   
-  .page-button, #pagination-container button {
+.page-button, #pagination-container button {
     cursor: pointer;
     border: 1px solid #ccc;
     background-color: #f8f8f8;
@@ -147,14 +168,14 @@ main {
     display: flex; /* 使用flex布局使文字居中 */
     align-items: center; /* 垂直居中 */
     justify-content: center; /* 水平居中 */
-  }
+}
   
-  .page-button:hover, #pagination-container button:hover {
+.page-button:hover, #pagination-container button:hover {
     background-color: #e7e7e7;
-  }
+}
   
-  #pagination-container .active, .page-button:disabled {
+#pagination-container .active, .page-button:disabled {
     background-color: #ccc; /* 当前页和禁用按钮的颜色 */
     color: white;
     cursor: not-allowed; /* 更改鼠标样式表示按钮不可点击 */
-  }
+}

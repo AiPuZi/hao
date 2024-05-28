@@ -3,21 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chinese Characters Display</title>
+  <title id="nav-title">ChineseEasy — Easy to Learn Chinese</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="translations.js"></script>
 </head>
 <body>
 
   <div class="header">
-    <a href="/" class="logo">Chinese</a>
+    <a href="/" class="logo">ChineseEasy</a>
     <nav class="navigation">
-      <a href="#chinese">汉字</a>
-      <a href="#ciyu">词语</a>
-      <a href="#juzi">句子</a>
-      <a href="/pinyin.html" target="_blank">拼音</a>
-      <a href="/bangzhu.html" target="_blank">帮助</a>
+      <a href="#chinese" id="nav-char">Characters</a>
+      <a href="#ciyu" id="nav-word">Words</a>
+      <a href="#juzi" id="nav-sentence">Sentences</a>
+      <a href="pinyin.html" id="nav-pinyin"" class="external-link">Pinyin</a>
+      <a href="help.html" id="nav-help"" class="external-link">Help</a>
     </nav>
+    <div class="language-switch">
+      <a href="javascript:void(0);" onclick="setLanguage('en');">English</a> 
+      <span>|</span> 
+      <a href="javascript:void(0);" onclick="setLanguage('cn');">中文</a> 
+      <span>|</span> 
+      <a href="javascript:void(0);" onclick="setLanguage('ru');">Русский</a>
+    </div>
   </div>
 
   <main id="text-container">
@@ -31,7 +39,7 @@
   </div>
 
   <footer class="footer">
-    <a href="https://www.example.com" target="_blank">ILOVECHINESE.TOP 版权所有</a>
+    <P><a href="https://www.chineseeasy.top" target="_blank">CHINESEEASY.TOP</a> ALL RIGHTS RESERVED.</P>
   </footer>
 
   <script src="dist/bundle.js"></script>

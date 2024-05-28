@@ -1,0 +1,5 @@
+[
+    { "char": "早。", "russian": "утро.", "english": "Morning." },
+    { "char": "早上好。", "russian": "доброе утро.", "english": "Good morning." },
+    { "char": "吃早餐没有？", "russian": "Ты завтракал(а)?", "english": "Did you have breakfast?" }
+]

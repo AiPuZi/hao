@@ -13,21 +13,27 @@ document.addEventListener('DOMContentLoaded', function() {
   loadCategoryData('chinese.json');
 
   // 绑定导航链接的点击事件
-  const navLinks = document.querySelectorAll('.navigation a');
-  navLinks.forEach(function(navLink) {
-    navLink.addEventListener('click', function(event) {
-      const href = navLink.getAttribute('href');
-      
-      // 检查链接是否为内部锚点
-      if (href.startsWith('#')) {
-        event.preventDefault(); // 防止默认行为
-        const category = href.substring(1); // 提取链接的锚点部分作为类别
-        loadCategoryData(category + '.json');
-      } else {
-        // 如果不是锚点链接，执行默认的页面跳转
-        window.location.href = href;
-      }
-    });
+const navLinks = document.querySelectorAll('.navigation a');
+navLinks.forEach(function(navLink) {
+  navLink.addEventListener('click', function(event) {
+    const href = navLink.getAttribute('href');
+    
+    // 检查链接是否为内部锚点
+    if (href.startsWith('#')) {
+      event.preventDefault(); // 防止默认行为
+      const category = href.substring(1); // 提取链接的锚点部分作为类别
+      loadCategoryData(category + '.json');
+    }
+  });
+});
+});
+
+// 绑定外部链接的点击事件
+const externalLinks = document.querySelectorAll('.external-link');
+externalLinks.forEach(link => {
+  link.addEventListener('click', function(event) {
+    event.preventDefault(); 
+    window.open(this.href, '_blank'); 
   });
 });
 
@@ -64,6 +70,12 @@ function renderChineseCharacters() {
     
     const pinyinDiv = document.createElement('div');
     pinyinDiv.classList.add('pinyin');
+
+    // 动态设置拼音DIV样式
+    pinyinDiv.style.fontSize = '18px';   // 设置字体大小
+    pinyinDiv.style.fontWeight = 'bold'; // 设置字体加粗
+    pinyinDiv.style.color = 'orange'; 
+
     const charPinyin = pinyin(char, { style: pinyin.STYLE_TONE });
     pinyinDiv.textContent = charPinyin.join(' '); // 将拼音数组连接为字符串显示
     characterBox.appendChild(pinyinDiv);
@@ -130,15 +142,7 @@ async function renderOtherCharacters() {
   const end = start + pageSize; // 计算当前页面的结束索引
   const pageCharacters = characters.slice(start, end);
 
-  // 获取俄文和英文翻译
-  let translations = {}; // 初始化为空对象
-  try {
-    translations = await getTranslation(pageCharacters, 'zh', 'ru');
-  } catch (error) {
-    console.error('Error fetching translations:', error);
-  }
-
-  pageCharacters.forEach((char, index) => {
+  pageCharacters.forEach((charObj, index) => { // 这里改为 charObj 而不是 char
     const characterBox = document.createElement('div');
     characterBox.classList.add('character-box');
     characterBox.style.display = 'flex';
@@ -150,35 +154,30 @@ async function renderOtherCharacters() {
     // 创建拼音div并添加到characterBox中
     const pinyinDiv = document.createElement('div');
     pinyinDiv.classList.add('pinyin');
-    pinyinDiv.style.fontSize = '16px'; // 设置拼音的字体大小
-    const charPinyin = pinyin(char, { style: pinyin.STYLE_TONE });
+    pinyinDiv.style.fontSize = '15px'; // 设置拼音的字体大小
+    pinyinDiv.style.marginBottom = '0px'; // 调小拼音和汉字之间的间距
+    const charPinyin = pinyin(charObj.char, { style: pinyin.STYLE_TONE });
     pinyinDiv.textContent = charPinyin.join(' ');
     characterBox.appendChild(pinyinDiv);
 
     // 创建文字div并添加到characterBox中
     const charText = document.createElement('div');
-    charText.textContent = char;
-    charText.style.fontSize = '35px'; // 设置文字的字体大小，确保比拼音大
+    charText.textContent = charObj.char; // 使用 charObj.char 而不是 char
+    charText.style.fontSize = '20px'; // 设置文字的字体大小
     charText.style.fontWeight = 'bold'; // 设置文字为粗体
     charText.style.color = '#696969'; // 设置文字颜色
     characterBox.appendChild(charText);
 
-    // 添加翻译容器
-    const translationsContainer = document.createElement('div');
-    translationsContainer.style.marginTop = '10px';
-    characterBox.appendChild(translationsContainer);
-
-    // 显示俄文翻译
-    const russianDiv = document.createElement('div');
-    //  使用索引访问对应的翻译结果
-    russianDiv.textContent = translations[index] ? `俄文: ${translations[index][0]}` : '俄文翻译未找到'; 
-    translationsContainer.appendChild(russianDiv);
-
-    // 显示英文翻译
-    const englishDiv = document.createElement('div');
-    //  使用索引访问对应的翻译结果
-    englishDiv.textContent = translations[index] ? `英文: ${translations[index][1]}` : '英文翻译未找到'; 
-    translationsContainer.appendChild(englishDiv);
+    // 创建翻译div并添加到characterBox中
+    const translationDiv = document.createElement('div');
+    translationDiv.classList.add('translation');
+    translationDiv.style.fontSize = '16px'; // 设置翻译的字体大小
+    translationDiv.style.textAlign = 'center'; // 居中对齐
+    translationDiv.innerHTML = `
+      <div style="margin-bottom: 6px; color: blue;">Русский: ${charObj.russian}</div>
+      <div style="color: green;">English: ${charObj.english}</div>
+    `; // 以HTML格式插入翻译文本，并设置 margin-bottom 为 6px
+    characterBox.appendChild(translationDiv);
 
     // 创建发音按钮并添加到characterBox中
     const pronounceButton = document.createElement('button');
@@ -196,7 +195,7 @@ async function renderOtherCharacters() {
     pronounceButton.style.cursor = 'pointer';
     pronounceButton.addEventListener('click', function () {
       const msg = new SpeechSynthesisUtterance();
-      msg.text = char;
+      msg.text = charObj.char; // 使用 charObj.char 而不是 char
       msg.lang = 'zh-CN';
       window.speechSynthesis.speak(msg);
     });
@@ -278,35 +277,5 @@ function showNextPage() {
       renderOtherCharacters();
     }
     renderPagination();
-  }
-}
-
-// 异步获取俄文翻译
-async function getTranslation(textArray, sourceLang, targetLang) {
-  const apiUrl = 'https://hao-peach.vercel.app/api/translate?text=' + encodeURIComponent(textArray.join('\n')) + '&source_lang=' + sourceLang + '&target_lang=' + targetLang;
-
-  try {
-    const response = await fetch(apiUrl);
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const translationData = await response.json();
-    console.log("translationData:", translationData);
-
-    //  将翻译结果分割成数组
-    const translations = translationData.map(translation => translation.split('\n')); 
-
-    //  将每个词组的翻译结果与 textArray 中的词组一一对应
-    const result = {};
-    for (let i = 0; i < textArray.length; i++) {
-      result[i] = translations[i] || []; //  如果 translations[i] 不存在，则设置为 [], 避免 undefined 错误
-    }
-
-    return result;
-  } catch (error) {
-    console.error('Error fetching translation:', error);
-    return {}; // 返回空对象， 避免后续代码报错
   }
 }
